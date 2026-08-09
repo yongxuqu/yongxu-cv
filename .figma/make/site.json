@@ -1,0 +1,10 @@
+{
+  "description": "Automatically creates fully responsive websites from uploaded images, enabling designers and developers to quickly transform visuals into functional web pages.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
