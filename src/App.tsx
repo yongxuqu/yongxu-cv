@@ -1,4 +1,4 @@
-import { type CSSProperties, useEffect, useRef, useState } from 'react'
+import { type CSSProperties, type PointerEvent, useEffect, useRef, useState } from 'react'
 import LiquidGlass from 'liquid-glass-react'
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
@@ -15,7 +15,6 @@ const pageOrder: Record<Page, number> = {
   videos: 1,
   skills: 2,
 }
-const pageSequence: Page[] = ['home', 'videos', 'skills']
 const wheelSwitchThreshold = 22
 const wheelBackSwitchThreshold = 10
 const wheelSwitchLockMs = 590
@@ -92,12 +91,12 @@ const skillGroups = [
     title: '开发',
     label: 'DEVELOPMENT',
     metric: 'Xcode',
-    desc: '使用 Xcode 完成移动端应用开发与调试，独立推进 ColorLog、LimU AI 两款 App 从需求分析、功能设计、前后端开发到测试上架的完整流程，也能把家装报价这种具体业务流程做成可运行工具。',
+    desc: '熟练使用 Xcode 开发 iOS 应用，掌握 Swift 语言，曾独立完成多款 App 的设计、开发与迭代，熟悉从编码调试、上传 App Store Connect 到测试分发与版本发布的完整流程。',
     tools: ['Xcode', '移动端开发', '前后端开发', '测试上架'],
     apps: [
-      { name: 'Xcode', icon: '/icons/xcode.png', fallback: 'X', color: '#147efb' },
-      { name: 'App Store', icon: '/icons/appstore.png', fallback: 'A', color: '#1f9cff' },
-      { name: 'Swift', icon: 'https://cdn.simpleicons.org/swift', fallback: 'S', color: '#f05138' },
+      { name: 'Xcode', icon: '/icons/uniform/xcode.png', fallback: 'X', color: '#147efb' },
+      { name: 'App Store', icon: '/icons/uniform/appstore.png', fallback: 'A', color: '#1f9cff' },
+      { name: 'Swift', icon: '/icons/uniform/swift.png', fallback: 'S', color: '#f05138' },
     ],
     color: '#ff8d30',
   },
@@ -106,12 +105,12 @@ const skillGroups = [
     title: 'AI工具',
     label: 'AI TOOLCHAIN',
     metric: 'Claude Code / Codex / Cursor',
-    desc: '熟悉用 AI 工具进行需求拆解、方案设计、代码实现与迭代调试，把想法快速变成可运行产品。当前工作方式以 Claude Code、Codex、Cursor 为核心，强调产品判断、实现速度和持续验证。',
+    desc: '熟悉 AI Coding 工具，从 Claude 3.5 Sonnet 阶段开始使用 Cursor 参与编程实践，持续跟进国内外编程软件与大模型能力的快速演进。日常会用 AI 辅助完成 PRD 梳理、技术架构、前端实现、后端逻辑和迭代调试。',
     tools: ['Claude Code', 'Codex', 'Cursor', '快速原型'],
     apps: [
-      { name: 'Claude Code', icon: 'https://cdn.simpleicons.org/claudecode', fallback: 'C', color: '#d97745' },
-      { name: 'Codex', icon: '/icons/codex.png', fallback: 'Cd', color: '#101010' },
-      { name: 'Cursor', icon: 'https://cdn.simpleicons.org/cursor', fallback: 'Cu', color: '#2f3138' },
+      { name: 'Claude Code', icon: '/icons/uniform/claude-code.png', fallback: 'C', color: '#d97745' },
+      { name: 'Codex', icon: '/icons/uniform/codex.png', fallback: 'Cd', color: '#101010' },
+      { name: 'Cursor', icon: '/icons/uniform/cursor.png', fallback: 'Cu', color: '#2f3138' },
     ],
     color: '#f26a1b',
   },
@@ -119,13 +118,14 @@ const skillGroups = [
     id: 'content',
     title: '设计',
     label: 'DESIGN',
-    metric: 'Figma / PS / LR',
-    desc: '具备设计表达和素材处理能力，使用 Figma 完成界面和视觉方案，使用 Photoshop、Lightroom 处理图片素材，也能配合内容运营完成封面、海报、视频视觉和数据复盘。',
-    tools: ['Figma', 'Photoshop', 'Lightroom', '视觉设计'],
+    metric: 'Figma / PS / AI / LR',
+    desc: '熟练使用 Figma 完成 UI、UX 与 Logo 设计，使用 Illustrator 绘制 Logo 和矢量图形，能够用 Photoshop 完成素材处理与海报制作，并用 Lightroom 进行图片调色和后期优化。',
+    tools: ['Figma', 'Photoshop', 'Illustrator', 'Lightroom', '视觉设计'],
     apps: [
-      { name: 'Figma', icon: '/icons/figma.png', fallback: 'F', color: '#a259ff' },
-      { name: 'Photoshop', icon: 'https://www.svgrepo.com/show/91986/adobe-photoshop-logo.svg', fallback: 'Ps', color: '#001e36' },
-      { name: 'Lightroom', icon: 'https://www.svgrepo.com/show/369710/adobe-lightroom.svg', fallback: 'Lr', color: '#001e36' },
+      { name: 'Figma', icon: '/icons/uniform/figma.png', fallback: 'F', color: '#a259ff' },
+      { name: 'Photoshop', icon: '/icons/uniform/photoshop.png', fallback: 'Ps', color: '#001e36' },
+      { name: 'Illustrator', icon: '/icons/uniform/illustrator.png', fallback: 'Ai', color: '#ff9a00' },
+      { name: 'Lightroom', icon: '/icons/uniform/lightroom.png', fallback: 'Lr', color: '#001e36' },
     ],
     color: '#f08a24',
   },
@@ -134,11 +134,11 @@ const skillGroups = [
     title: '建模',
     label: 'MODELING',
     metric: 'SolidWorks / AutoCAD',
-    desc: '掌握 SolidWorks、AutoCAD 等建模与工程表达工具，能够配合材料、实验和家装场景完成结构理解、尺寸整理、图纸表达和方案沟通。',
+    desc: '系统学习过 CAD 相关课程并以高分通过，能够使用 SolidWorks 和 AutoCAD 完成基础 2D、3D 建模、尺寸标注与工程图绘制，具备结构表达和图纸沟通能力。',
     tools: ['SolidWorks', 'AutoCAD', '尺寸整理', '图纸表达'],
     apps: [
-      { name: 'SolidWorks', icon: 'https://www.svgrepo.com/show/508968/solidworks.svg', fallback: 'SW', color: '#d71920' },
-      { name: 'AutoCAD', icon: 'https://cdn.simpleicons.org/autocad', fallback: 'A', color: '#df2027' },
+      { name: 'SolidWorks', icon: '/icons/uniform/solidworks.png', fallback: 'SW', color: '#d71920' },
+      { name: 'AutoCAD', icon: '/icons/uniform/autocad.png', fallback: 'A', color: '#df2027' },
     ],
     color: '#d8661a',
   },
@@ -147,16 +147,85 @@ const skillGroups = [
     title: '办公',
     label: 'OFFICE',
     metric: 'Office / Xmind',
-    desc: '熟悉 Office 和 Xmind，能完成项目文档、竞赛材料、PPT 汇报、宣传稿件和结构化思维梳理，把复杂信息整理成清晰可执行的方案。',
-    tools: ['Office', 'Xmind', 'PPT', '文档整理'],
+    desc: '熟练掌握 Office 办公套件，能够高效使用 Word、PPT、Excel 完成文档、汇报和表格处理；同时熟悉 Xmind 与 Markdown，可完成思维导图绘制和结构化内容整理。',
+    tools: ['Office', 'Xmind', '汇报材料', '文档整理'],
     apps: [
-      { name: 'Office', icon: 'https://www.svgrepo.com/show/303162/office-365-logo.svg', fallback: 'O', color: '#d83b01' },
-      { name: 'Xmind', icon: 'https://icons.iconarchive.com/icons/papirus-team/papirus-apps/128/xmind-icon.png', fallback: 'X', color: '#0f9d58' },
-      { name: 'PowerPoint', icon: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/PowerPoint_Logo_2025.svg', fallback: 'P', color: '#c43e1c' },
+      { name: 'Office', icon: '/icons/uniform/office.png', fallback: 'O', color: '#d83b01' },
+      { name: 'Xmind', icon: '/icons/uniform/xmind.png', fallback: 'X', color: '#0f9d58' },
     ],
     color: '#ad4c14',
   },
+  {
+    id: 'editing',
+    title: '剪辑',
+    label: 'VIDEO EDITING',
+    metric: '剪映 / After Effects',
+    desc: '能够使用剪映完成短视频剪辑、字幕包装、节奏卡点和基础调色，也能使用 After Effects 制作动效、转场和视觉特效，支持视频内容从素材整理到成片输出。',
+    tools: ['剪映', 'After Effects', '视频剪辑', '动效包装'],
+    apps: [
+      { name: '剪映', icon: '/icons/uniform/jianying.png', fallback: '剪', color: '#111111' },
+      { name: 'After Effects', icon: '/icons/uniform/after-effects.png', fallback: 'Ae', color: '#2d1b69' },
+    ],
+    color: '#b9471b',
+  },
 ]
+
+const skillWalls = [
+  { title: '软件技能', displayTitle: '个人技能', label: 'SOFTWARE', color: hoodieOrange },
+  { title: '读书感悟', displayTitle: '读书感悟', label: 'READING', color: '#d87922' },
+  { title: '观点见解', displayTitle: '观点见解', label: 'THOUGHTS', color: '#c9571a' },
+]
+
+const readingBooks = [
+  { title: '原则', note: '把经验沉淀成可复用的判断流程。', color: 'rgba(255,196,105,0.82)' },
+  { title: '纳瓦尔宝典', note: '长期主义不是慢，而是把注意力放在复利处。', color: 'rgba(255,236,176,0.8)' },
+  { title: '设计心理学', note: '好体验来自对场景和心智模型的尊重。', color: 'rgba(255,168,86,0.8)' },
+  { title: '被讨厌的勇气', note: '分清自己的课题，减少无效内耗。', color: 'rgba(255,221,137,0.78)' },
+  { title: '刻意练习', note: '成长需要清晰反馈，而不是重复消耗。', color: 'rgba(255,151,78,0.78)' },
+]
+
+const insightNotes = [
+  { title: '产品', note: '产品判断先于功能堆叠，先回答为什么存在。', rotation: -5 },
+  { title: 'AI', note: 'AI 是原型速度的放大器，关键仍是提出好问题。', rotation: 4 },
+  { title: '学习', note: '学习要落到作品、验证和复盘，才会真正留下来。', rotation: -2 },
+  { title: '工具', note: '好工具应该降低下一次行动成本，而不是增加流程。', rotation: 5 },
+  { title: '长期', note: '长期记录会把灵感变成资产，也能校准判断。', rotation: -4 },
+]
+
+const readingBookSlots = [
+  { left: 42, top: 96, width: 54, height: 172, rotation: -3 },
+  { left: 104, top: 72, width: 64, height: 196, rotation: 2 },
+  { left: 176, top: 104, width: 56, height: 164, rotation: -1 },
+  { left: 248, top: 82, width: 68, height: 186, rotation: 3 },
+  { left: 326, top: 116, width: 52, height: 152, rotation: -2 },
+]
+
+const insightNoteSlots = [
+  { left: 12, top: 34 },
+  { left: 150, top: 8 },
+  { left: 288, top: 52 },
+  { left: 68, top: 200 },
+  { left: 238, top: 188 },
+]
+
+const appSpreadSlots = [
+  { left: 18, top: 22, rotation: -13 },
+  { left: 124, top: 2, rotation: 4 },
+  { left: 230, top: 22, rotation: 13 },
+]
+
+const appSpreadSlotsFour = [
+  { left: 4, top: 34, rotation: -10 },
+  { left: 84, top: 8, rotation: -4 },
+  { left: 164, top: 8, rotation: 4 },
+  { left: 244, top: 34, rotation: 10 },
+]
+
+const appIconSize = 56
+const skillIconCollapseMs = 300
+const skillIconExpandDelayMs = 35
+const skillPageAutoExpandDelayMs = 180
+const skillWallTransitionMs = 560
 
 function LiquidFolderIcon({ active, label }: { active: boolean; accent: string; label: string }) {
   return (
@@ -245,12 +314,15 @@ function LargeLiquidFolder({ accent, title }: { accent: string; title: string })
       <div
         style={{
           position: 'absolute',
-          left: 31,
-          bottom: 29,
+          left: 12,
+          right: 18,
+          top: 104,
           fontFamily: "'Oswald', sans-serif",
           fontSize: 42,
           fontWeight: 700,
           color: 'rgba(255,255,255,0.94)',
+          lineHeight: 1,
+          textAlign: 'center',
           textShadow: '0 8px 22px rgba(92,37,6,0.2)',
         }}
       >
@@ -543,11 +615,22 @@ export default function App() {
   const [pageMotion, setPageMotion] = useState<PageMotion>('none')
   const [activeProject, setActiveProject] = useState(0)
   const [activeSkill, setActiveSkill] = useState(0)
+  const [activeSkillWall, setActiveSkillWall] = useState(0)
+  const [skillWallTrackIndex, setSkillWallTrackIndex] = useState(0)
+  const [skillWallTransitionEnabled, setSkillWallTransitionEnabled] = useState(true)
+  const [skillAppsExpanded, setSkillAppsExpanded] = useState(false)
   const pageRef = useRef<Page>('home')
+  const activeSkillWallRef = useRef(0)
+  const skillAppsExpandedRef = useRef(false)
+  const skillWallPointerRef = useRef<{ x: number; y: number } | null>(null)
+  const skillWallNavLockedRef = useRef(false)
   const wheelAccumRef = useRef(0)
   const wheelLockRef = useRef(false)
   const wheelResetTimerRef = useRef<number | null>(null)
   const wheelLockTimerRef = useRef<number | null>(null)
+  const skillExpandTimerRef = useRef<number | null>(null)
+  const skillWallWrapTimerRef = useRef<number | null>(null)
+  const skillWallNavTimerRef = useRef<number | null>(null)
   const lastWheelDirectionRef = useRef<-1 | 0 | 1>(0)
   const pendingWheelDirectionRef = useRef<-1 | 0 | 1>(0)
 
@@ -565,22 +648,185 @@ export default function App() {
   }, [page])
 
   useEffect(() => {
+    activeSkillWallRef.current = activeSkillWall
+  }, [activeSkillWall])
+
+  useEffect(() => {
+    skillAppsExpandedRef.current = skillAppsExpanded
+  }, [skillAppsExpanded])
+
+  useEffect(() => {
+    if (page !== 'skills') {
+      if (skillExpandTimerRef.current !== null) {
+        window.clearTimeout(skillExpandTimerRef.current)
+        skillExpandTimerRef.current = null
+      }
+      if (skillWallWrapTimerRef.current !== null) {
+        window.clearTimeout(skillWallWrapTimerRef.current)
+        skillWallWrapTimerRef.current = null
+      }
+      if (skillWallNavTimerRef.current !== null) {
+        window.clearTimeout(skillWallNavTimerRef.current)
+        skillWallNavTimerRef.current = null
+      }
+      skillWallNavLockedRef.current = false
+      setActiveSkillWall(0)
+      activeSkillWallRef.current = 0
+      setSkillWallTransitionEnabled(false)
+      setSkillWallTrackIndex(0)
+      window.requestAnimationFrame(() => {
+        setSkillWallTransitionEnabled(true)
+      })
+      setSkillAppsExpanded(false)
+      skillAppsExpandedRef.current = false
+      return
+    }
+
+    if (skillExpandTimerRef.current !== null) {
+      window.clearTimeout(skillExpandTimerRef.current)
+      skillExpandTimerRef.current = null
+    }
+
+    setActiveSkill(0)
+    setActiveSkillWall(0)
+    activeSkillWallRef.current = 0
+    setSkillWallTransitionEnabled(false)
+    setSkillWallTrackIndex(0)
+    setSkillAppsExpanded(false)
+    skillAppsExpandedRef.current = false
+
+    window.requestAnimationFrame(() => {
+      setSkillWallTransitionEnabled(true)
+    })
+
+    skillExpandTimerRef.current = window.setTimeout(() => {
+      setSkillAppsExpanded(true)
+      skillExpandTimerRef.current = null
+    }, skillPageAutoExpandDelayMs)
+  }, [page])
+
+  useEffect(() => {
+    if (activeSkillWall !== 0) {
+      setSkillAppsExpanded(false)
+    }
+  }, [activeSkillWall])
+
+  useEffect(() => {
+    return () => {
+      if (skillExpandTimerRef.current !== null) {
+        window.clearTimeout(skillExpandTimerRef.current)
+      }
+      if (skillWallWrapTimerRef.current !== null) {
+        window.clearTimeout(skillWallWrapTimerRef.current)
+      }
+      if (skillWallNavTimerRef.current !== null) {
+        window.clearTimeout(skillWallNavTimerRef.current)
+      }
+    }
+  }, [])
+
+  const selectSkill = (index: number) => {
+    const waitForCollapse = skillAppsExpandedRef.current || skillExpandTimerRef.current !== null
+
+    if (skillExpandTimerRef.current !== null) {
+      window.clearTimeout(skillExpandTimerRef.current)
+      skillExpandTimerRef.current = null
+    }
+
+    setSkillAppsExpanded(false)
+    skillExpandTimerRef.current = window.setTimeout(() => {
+      setActiveSkill(index)
+      skillExpandTimerRef.current = window.setTimeout(() => {
+        setSkillAppsExpanded(true)
+        skillExpandTimerRef.current = null
+      }, skillIconExpandDelayMs)
+    }, waitForCollapse ? skillIconCollapseMs : skillIconExpandDelayMs)
+  }
+
+  const resetSkillWallTrackAfterWrap = (index: number) => {
+    if (skillWallWrapTimerRef.current !== null) {
+      window.clearTimeout(skillWallWrapTimerRef.current)
+    }
+
+    skillWallWrapTimerRef.current = window.setTimeout(() => {
+      setSkillWallTransitionEnabled(false)
+      setSkillWallTrackIndex(index)
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          setSkillWallTransitionEnabled(true)
+        })
+      })
+      skillWallWrapTimerRef.current = null
+    }, skillWallTransitionMs)
+  }
+
+  const lockSkillWallNavigation = () => {
+    skillWallNavLockedRef.current = true
+    if (skillWallNavTimerRef.current !== null) {
+      window.clearTimeout(skillWallNavTimerRef.current)
+    }
+    skillWallNavTimerRef.current = window.setTimeout(() => {
+      skillWallNavLockedRef.current = false
+      skillWallNavTimerRef.current = null
+    }, skillWallTransitionMs)
+  }
+
+  const changeSkillWallByDirection = (direction: -1 | 1) => {
+    if (skillWallNavLockedRef.current) return
+
+    const currentIndex = activeSkillWallRef.current
+    const nextIndex = (currentIndex + direction + skillWalls.length) % skillWalls.length
+
+    lockSkillWallNavigation()
+    activeSkillWallRef.current = nextIndex
+    setActiveSkillWall(nextIndex)
+    setSkillWallTransitionEnabled(true)
+
+    if (currentIndex === skillWalls.length - 1 && direction === 1) {
+      setSkillWallTrackIndex(skillWalls.length)
+      resetSkillWallTrackAfterWrap(nextIndex)
+      return
+    }
+
+    if (currentIndex === 0 && direction === -1) {
+      setSkillWallTrackIndex(-1)
+      resetSkillWallTrackAfterWrap(nextIndex)
+      return
+    }
+
+    setSkillWallTrackIndex(nextIndex)
+  }
+
+  const handleSkillWallPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    skillWallPointerRef.current = { x: event.clientX, y: event.clientY }
+  }
+
+  const handleSkillWallPointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    const start = skillWallPointerRef.current
+    skillWallPointerRef.current = null
+    if (!start) return
+
+    const deltaX = event.clientX - start.x
+    const deltaY = event.clientY - start.y
+    if (Math.abs(deltaX) < 54 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return
+
+    changeSkillWallByDirection(deltaX < 0 ? 1 : -1)
+  }
+
+  useEffect(() => {
     const normalizeWheelDelta = (event: WheelEvent) => {
       if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return event.deltaY * 16
       if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) return event.deltaY * window.innerHeight
       return event.deltaY
     }
 
-    const switchByDirection = (direction: -1 | 1) => {
+    const switchSkillWallByDirection = (direction: -1 | 1) => {
       wheelAccumRef.current = 0
-      const currentIndex = pageSequence.indexOf(pageRef.current)
-      const nextPage = pageSequence[Math.min(Math.max(currentIndex + direction, 0), pageSequence.length - 1)]
-      if (!nextPage || nextPage === pageRef.current) return
 
       pendingWheelDirectionRef.current = 0
       lastWheelDirectionRef.current = direction
       wheelLockRef.current = true
-      goToPage(nextPage)
+      changeSkillWallByDirection(direction)
 
       if (wheelLockTimerRef.current !== null) {
         window.clearTimeout(wheelLockTimerRef.current)
@@ -592,13 +838,14 @@ export default function App() {
         const pendingDirection = pendingWheelDirectionRef.current
         pendingWheelDirectionRef.current = 0
         if (pendingDirection !== 0) {
-          switchByDirection(pendingDirection)
+          switchSkillWallByDirection(pendingDirection)
         }
       }, wheelSwitchLockMs)
     }
 
     const handleWheel = (event: WheelEvent) => {
       if (event.ctrlKey) return
+      if (pageRef.current !== 'skills') return
 
       const target = event.target instanceof Element ? event.target : null
       if (target?.closest('input, textarea, select, [data-allow-scroll="true"]')) return
@@ -628,7 +875,7 @@ export default function App() {
       const threshold = wheelAccumRef.current < 0 ? wheelBackSwitchThreshold : wheelSwitchThreshold
       if (Math.abs(wheelAccumRef.current) < threshold) return
 
-      switchByDirection(wheelAccumRef.current > 0 ? 1 : -1)
+      switchSkillWallByDirection(wheelAccumRef.current > 0 ? 1 : -1)
     }
 
     window.addEventListener('wheel', handleWheel, { passive: false, capture: true })
@@ -646,6 +893,17 @@ export default function App() {
 
   const pageClassName = `page-screen ${pageMotion === 'up' ? 'page-enter-up' : pageMotion === 'down' ? 'page-enter-down' : ''}`
   const selectedSkill = skillGroups[activeSkill]
+  const activeSkillWallData = skillWalls[activeSkillWall]
+  const activeSkillColor = activeSkillWall === 0 ? selectedSkill.color : activeSkillWallData.color
+  const selectedAppSlots =
+    selectedSkill.apps.length === 2
+      ? [
+          { left: 72, top: 14, rotation: -10 },
+          { left: 184, top: 14, rotation: 10 },
+        ]
+      : selectedSkill.apps.length === 4
+        ? appSpreadSlotsFour
+        : appSpreadSlots
 
   return (
     <div className="app-shell" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -666,10 +924,10 @@ export default function App() {
 
         {/* Nav pills — absolutely centered */}
         <LiquidGlass
-          displacementScale={42}
-          blurAmount={0.08}
-          saturation={150}
-          aberrationIntensity={1.6}
+          displacementScale={64}
+          blurAmount={0.1}
+          saturation={130}
+          aberrationIntensity={2}
           elasticity={0}
           cornerRadius={999}
           padding="8px"
@@ -1008,7 +1266,7 @@ export default function App() {
             style={{
               position: 'absolute',
               inset: 0,
-              background: `radial-gradient(ellipse at 50% 102%, ${selectedSkill.color} 0%, rgba(255,139,42,0.84) 24%, ${hoodieOrangeDeep} 62%, ${hoodieOrangeDark} 100%)`,
+              background: `radial-gradient(ellipse at 50% 102%, ${activeSkillColor} 0%, rgba(255,139,42,0.84) 24%, ${hoodieOrangeDeep} 62%, ${hoodieOrangeDark} 100%)`,
               transition: 'background 0.4s',
             }}
           />
@@ -1032,15 +1290,74 @@ export default function App() {
               height: '100%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              padding: '96px clamp(40px, 6vw, 86px) 48px',
-            }}
-          >
-            <LiquidGlass
-              displacementScale={76}
-              blurAmount={0.045}
-              saturation={165}
-              aberrationIntensity={2.2}
+	              justifyContent: 'center',
+	              padding: '96px clamp(40px, 6vw, 86px) 48px',
+	            }}
+	          >
+	            <div
+	              style={{
+	                position: 'absolute',
+	                left: '50%',
+	                top: 'calc(50% - max(215px, min(250px, calc((100vh - 160px) / 2))) - 48px)',
+	                width: 'min(1088px, calc(100vw - 80px))',
+	                transform: 'translateX(-50%)',
+	                zIndex: 7,
+	                display: 'flex',
+	                alignItems: 'center',
+	                justifyContent: 'space-between',
+	                pointerEvents: 'none',
+	              }}
+	            >
+	              <div
+	                style={{
+	                  display: 'flex',
+	                  alignItems: 'baseline',
+	                  gap: 12,
+	                  color: 'rgba(255,255,255,0.92)',
+	                  textShadow: '0 3px 12px rgba(82,31,4,0.22)',
+	                }}
+	              >
+	                <span
+	                  style={{
+	                    fontFamily: "'Oswald', sans-serif",
+	                    fontSize: 18,
+	                    fontWeight: 700,
+	                    lineHeight: 1,
+	                    letterSpacing: 0,
+	                  }}
+	                >
+	                  {String(activeSkillWall + 1).padStart(2, '0')}
+	                </span>
+	                <span style={{ width: 30, height: 1, background: 'rgba(255,255,255,0.58)' }} />
+	                <span
+	                  style={{
+	                    fontSize: 15,
+	                    fontWeight: 850,
+	                    letterSpacing: 1.2,
+	                  }}
+	                >
+	                  {activeSkillWallData.displayTitle}
+	                </span>
+	              </div>
+	              <div
+	                style={{
+	                  color: 'rgba(255,255,255,0.58)',
+	                  fontSize: 11,
+	                  fontWeight: 800,
+	                  letterSpacing: 3.2,
+	                  textTransform: 'uppercase',
+	                  textShadow: '0 2px 8px rgba(82,31,4,0.18)',
+	                }}
+	              >
+	                {activeSkillWallData.label} WALL
+	              </div>
+	            </div>
+
+	            <LiquidGlass
+              displacementScale={100}
+              blurAmount={1.0}
+              saturation={140}
+              aberrationIntensity={2}
               elasticity={0}
               cornerRadius={28}
               padding="0"
@@ -1051,25 +1368,41 @@ export default function App() {
                 top: '50%',
               }}
             >
-              <div
-                style={{
-                  width: 'min(1088px, calc(100vw - 80px))',
-                  height: 'min(500px, calc(100vh - 160px))',
-                  minHeight: 430,
-                  position: 'relative',
-                  borderRadius: 28,
-                  overflow: 'hidden',
-                }}
-              >
+	              <div
+	                onPointerDown={handleSkillWallPointerDown}
+	                onPointerUp={handleSkillWallPointerUp}
+	                onPointerCancel={() => {
+	                  skillWallPointerRef.current = null
+	                }}
+	                style={{
+	                  width: 'min(1088px, calc(100vw - 80px))',
+	                  height: 'min(500px, calc(100vh - 160px))',
+	                  minHeight: 430,
+	                  position: 'relative',
+	                  borderRadius: 28,
+	                  overflow: 'hidden',
+	                  touchAction: 'pan-y',
+	                }}
+	              >
+	              <div
+	                style={{
+	                  position: 'absolute',
+	                  inset: 0,
+	                  transform: `translate3d(${-skillWallTrackIndex * 100}%, 0, 0)`,
+	                  transition: skillWallTransitionEnabled ? `transform ${skillWallTransitionMs}ms cubic-bezier(0.22, 1, 0.36, 1)` : 'none',
+	                  willChange: 'transform',
+	                }}
+	              >
               <div
                 style={{
                   position: 'absolute',
-                  inset: 0,
-                  background: 'radial-gradient(ellipse at 74% 38%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.08) 42%, transparent 72%), linear-gradient(180deg, rgba(255,255,255,0.08), rgba(119,49,10,0.06))',
-                  pointerEvents: 'none',
+                  left: skillWallTrackIndex > skillWalls.length - 1 ? '300%' : '0%',
+                  top: 0,
+                  width: '100%',
+                  height: '100%',
+                  overflow: 'hidden',
                 }}
-              />
-
+              >
               <section
                 style={{
                   position: 'relative',
@@ -1094,46 +1427,24 @@ export default function App() {
                       color: 'white',
                       margin: '0 0 18px',
                       lineHeight: 1,
-                      textShadow: '0 8px 24px rgba(92,37,6,0.2)',
                     }}
                   >
                     {selectedSkill.title}
                   </h2>
-                  <p style={{ color: 'rgba(255,255,255,0.86)', fontSize: 13.2, lineHeight: 1.85, maxWidth: 620, margin: '0 0 20px', fontWeight: 500 }}>
+                  <p style={{ color: 'rgba(255,255,255,0.86)', fontSize: 13.2, lineHeight: 1.85, maxWidth: 620, margin: 0, fontWeight: 500 }}>
                     {selectedSkill.desc}
                   </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 9, maxWidth: 560 }}>
-                    {selectedSkill.tools.map((tool) => (
-                      <span
-                        key={tool}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          minHeight: 30,
-                          padding: '7px 11px',
-                          borderRadius: 999,
-                          background: 'rgba(255,255,255,0.16)',
-                          border: '1px solid rgba(255,255,255,0.2)',
-                          color: 'rgba(255,255,255,0.9)',
-                          fontSize: 11.5,
-                          fontWeight: 600,
-                        }}
-                      >
-                        {tool}
-                      </span>
-                    ))}
-                  </div>
                 </div>
 
                 <div>
                   <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.42)', marginBottom: 22 }} />
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 22 }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 13 }}>
                     {skillGroups.map((skill, i) => {
                       const active = activeSkill === i
                       return (
                         <button
                           key={skill.id}
-                          onClick={() => setActiveSkill(i)}
+                          onClick={() => selectSkill(i)}
                           aria-label={skill.title}
                           title={skill.title}
                           style={{
@@ -1160,7 +1471,6 @@ export default function App() {
               </section>
 
               <div
-                aria-hidden="true"
                 style={{
                   position: 'absolute',
                   right: 58,
@@ -1170,113 +1480,462 @@ export default function App() {
                   zIndex: 3,
                 }}
               >
-                <div
+                {selectedSkill.apps.map((app, i) => {
+                  const spreadSlot = selectedAppSlots[i] ?? appSpreadSlots[i % appSpreadSlots.length]
+                  const collapsedLeft = 136 + i * 5
+                  const collapsedTop = 154 + i * 4
+
+                  return (
+                    <div
+                      key={`${selectedSkill.id}-${app.name}`}
+                      style={{
+                        position: 'absolute',
+                        left: skillAppsExpanded ? spreadSlot.left : collapsedLeft,
+                        top: skillAppsExpanded ? spreadSlot.top : collapsedTop,
+                        width: 70,
+                        height: 82,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        gap: 6,
+                        zIndex: skillAppsExpanded ? 6 + i : 1,
+                        opacity: skillAppsExpanded ? 1 : 0.24,
+                        pointerEvents: skillAppsExpanded ? 'auto' : 'none',
+                        transform: skillAppsExpanded
+                          ? `translate3d(0, 0, 0) rotate(${spreadSlot.rotation}deg) scale(1)`
+                          : `translate3d(0, 20px, 0) rotate(${-18 + i * 11}deg) scale(0.58)`,
+                        transformOrigin: '50% 110%',
+                        transition: `left 460ms cubic-bezier(0.16, 1.2, 0.3, 1) ${i * 34}ms, top 460ms cubic-bezier(0.16, 1.2, 0.3, 1) ${i * 34}ms, opacity 240ms ease ${i * 26}ms, transform 480ms cubic-bezier(0.16, 1.2, 0.32, 1) ${i * 34}ms, filter 260ms ease`,
+                        filter: skillAppsExpanded
+                          ? 'drop-shadow(0 16px 18px rgba(82,31,4,0.2))'
+                          : 'drop-shadow(0 10px 14px rgba(82,31,4,0.08))',
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: 60,
+                          height: 60,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          overflow: 'visible',
+                        }}
+                      >
+                        <img
+                          src={app.icon}
+                          alt=""
+                          style={{
+                            width: appIconSize,
+                            height: appIconSize,
+                            objectFit: 'contain',
+                            display: 'block',
+                            filter: 'drop-shadow(0 6px 9px rgba(74,28,4,0.2))',
+                          }}
+                          onError={(event) => {
+                            event.currentTarget.style.display = 'none'
+                            const fallback = event.currentTarget.nextElementSibling as HTMLElement | null
+                            if (fallback) fallback.style.display = 'flex'
+                          }}
+                        />
+                        <span
+                          style={{
+                            display: 'none',
+                            width: 48,
+                            height: 48,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 12,
+                            background: app.color,
+                            color: 'white',
+                            fontSize: app.fallback.length > 1 ? 13 : 19,
+                            fontWeight: 800,
+                            boxShadow: '0 8px 14px rgba(74,28,4,0.16)',
+                          }}
+                        >
+                          {app.fallback}
+                        </span>
+                      </span>
+                      <span
+                        style={{
+                          color: 'rgba(255,255,255,0.9)',
+                          fontSize: 10.5,
+                          fontWeight: 800,
+                          textAlign: 'center',
+                          lineHeight: 1.12,
+                          textShadow: '0 2px 8px rgba(82,31,4,0.32)',
+                          maxWidth: 84,
+                        }}
+                      >
+                        {app.name}
+                      </span>
+                    </div>
+                  )
+                })}
+
+                <button
                   key={`${selectedSkill.id}-folder`}
+                  type="button"
+                  onClick={() => setSkillAppsExpanded((expanded) => !expanded)}
+                  aria-label={skillAppsExpanded ? `收起${selectedSkill.title}应用` : `展开${selectedSkill.title}应用`}
                   style={{
                     position: 'absolute',
                     right: 18,
-                    top: 92,
+                    top: skillAppsExpanded ? (selectedSkill.apps.length === 4 ? 146 : 112) : 92,
                     width: 246,
                     height: 186,
-                    transform: 'perspective(720px) rotateX(5deg) rotateY(-10deg)',
-                    transition: 'transform 0.32s ease',
+                    border: 'none',
+                    padding: 0,
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    zIndex: 4,
+                    outline: 'none',
+                    WebkitTapHighlightColor: 'transparent',
+                    transform: skillAppsExpanded
+                      ? 'perspective(720px) rotateX(9deg) rotateY(13deg) rotateZ(-4deg) translate3d(-6px, 14px, 0)'
+                      : 'perspective(720px) rotateX(5deg) rotateY(-10deg) translate3d(0, 0, 0)',
+                    transformOrigin: '46% 70%',
+                    transition: 'top 340ms cubic-bezier(0.2, 0.9, 0.22, 1), transform 420ms cubic-bezier(0.16, 1.12, 0.32, 1), filter 240ms ease',
+                    filter: skillAppsExpanded
+                      ? 'drop-shadow(0 26px 28px rgba(82,31,4,0.18))'
+                      : 'drop-shadow(0 16px 20px rgba(82,31,4,0.12))',
                   }}
                 >
                   <LargeLiquidFolder accent={selectedSkill.color} title={selectedSkill.title} />
-                </div>
-
-                {selectedSkill.apps.map((app, i) => (
-                  <div
-                    key={`${selectedSkill.id}-${app.name}`}
-                    style={{
-                      position: 'absolute',
-                      right: i % 2 === 0 ? 20 + i * 26 : 132 + i * 12,
-                      top: 14 + i * 72,
-                      width: 72,
-                      height: 82,
-                      borderRadius: 18,
-                      background: 'rgba(255,255,255,0.2)',
-                      border: '1px solid rgba(255,255,255,0.38)',
-                      backdropFilter: 'blur(18px) saturate(160%)',
-                      WebkitBackdropFilter: 'blur(18px) saturate(160%)',
-                      boxShadow: '0 18px 30px rgba(82,31,4,0.16), inset 0 1px 0 rgba(255,255,255,0.25)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 7,
-                      transform: `translate3d(0, 0, 0) rotate(${i % 2 === 0 ? -5 : 6}deg)`,
-                      animation: `page-enter-up ${360 + i * 80}ms cubic-bezier(0.22, 1, 0.36, 1) both`,
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: 42,
-                        height: 42,
-                        borderRadius: 12,
-                        background: 'rgba(255,255,255,0.9)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.22), 0 8px 16px rgba(0,0,0,0.14)',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      <img
-                        src={app.icon}
-                        alt=""
-                        style={{
-                          width: 30,
-                          height: 30,
-                          objectFit: 'contain',
-                          display: 'block',
-                        }}
-                        onError={(event) => {
-                          event.currentTarget.style.display = 'none'
-                          const fallback = event.currentTarget.nextElementSibling as HTMLElement | null
-                          if (fallback) fallback.style.display = 'flex'
-                        }}
-                      />
-                      <span
-                        style={{
-                          display: 'none',
-                          width: '100%',
-                          height: '100%',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          borderRadius: 12,
-                          background: app.color,
-                          color: 'white',
-                          fontSize: app.fallback.length > 1 ? 13 : 19,
-                          fontWeight: 800,
-                        }}
-                      >
-                        {app.fallback}
-                      </span>
-                    </span>
-                    <span style={{ color: 'rgba(255,255,255,0.88)', fontSize: 10.5, fontWeight: 700, textAlign: 'center', lineHeight: 1.15 }}>
-                      {app.name}
-                    </span>
-                  </div>
-                ))}
+                </button>
               </div>
 
-              <div
-                style={{
-                  position: 'absolute',
-                  right: 56,
-                  bottom: 42,
-                  width: 260,
-                  height: 38,
-                  borderRadius: '50%',
-                  background: 'radial-gradient(ellipse, rgba(92,37,6,0.13) 0%, rgba(92,37,6,0.05) 48%, transparent 72%)',
-                  filter: 'blur(6px)',
-                  zIndex: 1,
-                }}
-	              />
+		              <div
+		                style={{
+		                  position: 'absolute',
+		                  right: 56,
+	                  bottom: 42,
+	                  width: 260,
+	                  height: 38,
+	                  borderRadius: '50%',
+	                  background: 'radial-gradient(ellipse, rgba(92,37,6,0.13) 0%, rgba(92,37,6,0.05) 48%, transparent 72%)',
+	                  filter: 'blur(6px)',
+		                  zIndex: 1,
+		                }}
+			              />
+              </div>
+
+		              <div
+		                style={{
+		                  position: 'absolute',
+	                  left: '100%',
+	                  top: 0,
+	                  width: '100%',
+	                  height: '100%',
+		                  overflow: 'hidden',
+		                }}
+		              >
+			                <section
+	                  style={{
+	                    position: 'relative',
+	                    zIndex: 2,
+	                    width: '48%',
+	                    height: '100%',
+	                    padding: '46px 52px 38px',
+	                    display: 'flex',
+	                    flexDirection: 'column',
+	                    justifyContent: 'space-between',
+	                  }}
+	                >
+	                  <div>
+	                    <div style={{ fontSize: 11, letterSpacing: 4, color: 'rgba(255,255,255,0.62)', textTransform: 'uppercase', marginBottom: 14 }}>
+	                      READING NOTES / BOOKSHELF
+	                    </div>
+	                    <h2
+	                      style={{
+	                        fontFamily: "'Oswald', sans-serif",
+	                        fontSize: 'clamp(42px, 5vw, 62px)',
+	                        fontWeight: 700,
+	                        color: 'white',
+	                        margin: '0 0 18px',
+	                        lineHeight: 1,
+	                      }}
+	                    >
+	                      读书感悟
+	                    </h2>
+	                    <p style={{ color: 'rgba(255,255,255,0.86)', fontSize: 13.2, lineHeight: 1.85, maxWidth: 520, margin: 0, fontWeight: 500 }}>
+	                      我更习惯把读书当成长期输入：先记录触动自己的概念，再把它和产品、学习、表达中的真实问题连接起来，最后沉淀成可复用的判断方式。
+	                    </p>
+	                  </div>
+
+	                  <div>
+	                    <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.42)', marginBottom: 18 }} />
+	                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
+	                      {['摘录', '连接', '复盘'].map((item) => (
+	                        <div
+	                          key={item}
+	                          style={{
+	                            borderRadius: 16,
+	                            padding: '12px 14px',
+	                            color: 'rgba(255,255,255,0.86)',
+	                            fontSize: 12,
+	                            fontWeight: 800,
+	                            textAlign: 'center',
+	                            border: '1px solid rgba(255,255,255,0.2)',
+	                          }}
+	                        >
+	                          {item}
+	                        </div>
+	                      ))}
+	                    </div>
+	                  </div>
+	                </section>
+
+	                <div
+	                  style={{
+	                    position: 'absolute',
+	                    right: 58,
+	                    top: 58,
+	                    width: 430,
+	                    height: 360,
+	                    zIndex: 3,
+	                  }}
+	                >
+		                  <div
+		                    style={{
+		                      position: 'absolute',
+	                      left: 18,
+	                      right: 14,
+	                      top: 270,
+	                      height: 18,
+	                      borderRadius: 999,
+	                      background: 'linear-gradient(90deg, rgba(255,255,255,0.26), rgba(255,255,255,0.08))',
+		                      boxShadow: '0 18px 28px rgba(82,31,4,0.16)',
+		                    }}
+		                  />
+		                  <div
+		                    style={{
+		                      position: 'absolute',
+		                      left: 20,
+		                      right: 20,
+		                      top: 280,
+		                      height: 1,
+		                      background: 'rgba(255,255,255,0.45)',
+		                    }}
+		                  />
+	
+	                  {readingBooks.map((book, i) => {
+	                    const slot = readingBookSlots[i]
+	                    return (
+	                      <div
+	                        key={book.title}
+	                        style={{
+	                          position: 'absolute',
+	                          left: slot.left,
+	                          top: slot.top,
+	                          width: slot.width,
+	                          height: slot.height,
+	                          borderRadius: 14,
+	                          background: `linear-gradient(160deg, ${book.color}, rgba(255,255,255,0.18))`,
+	                          border: '1px solid rgba(255,255,255,0.32)',
+	                          boxShadow: '0 20px 24px rgba(82,31,4,0.18), inset 0 1px 0 rgba(255,255,255,0.28)',
+	                          transform: `rotate(${slot.rotation}deg)`,
+	                          display: 'flex',
+	                          alignItems: 'center',
+	                          justifyContent: 'center',
+	                          padding: '12px 8px',
+	                        }}
+	                      >
+	                        <span
+	                          style={{
+	                            writingMode: 'vertical-rl',
+	                            color: 'rgba(255,255,255,0.94)',
+	                            fontSize: 14,
+	                            fontWeight: 900,
+	                            lineHeight: 1,
+	                            textShadow: '0 2px 8px rgba(82,31,4,0.28)',
+	                          }}
+	                        >
+	                          {book.title}
+	                        </span>
+	                      </div>
+	                    )
+	                  })}
+
+	                  {readingBooks.slice(0, 3).map((book, i) => (
+	                    <div
+	                      key={`${book.title}-note`}
+	                      style={{
+	                        position: 'absolute',
+	                        left: 28 + i * 128,
+	                        top: 304,
+	                        width: 112,
+	                        color: 'rgba(255,255,255,0.82)',
+	                        fontSize: 10.5,
+	                        fontWeight: 700,
+	                        lineHeight: 1.42,
+	                        textShadow: '0 2px 6px rgba(82,31,4,0.22)',
+	                      }}
+	                    >
+	                      {book.note}
+	                    </div>
+	                  ))}
+	                </div>
+	              </div>
+
+	              <div
+	                style={{
+	                  position: 'absolute',
+	                  left: skillWallTrackIndex < 0 ? '-100%' : '200%',
+	                  top: 0,
+	                  width: '100%',
+	                  height: '100%',
+		                  overflow: 'hidden',
+		                }}
+		              >
+			                <section
+	                  style={{
+	                    position: 'relative',
+	                    zIndex: 2,
+	                    width: '47%',
+	                    height: '100%',
+	                    padding: '46px 52px 38px',
+	                    display: 'flex',
+	                    flexDirection: 'column',
+	                    justifyContent: 'space-between',
+	                  }}
+	                >
+	                  <div>
+	                    <div style={{ fontSize: 11, letterSpacing: 4, color: 'rgba(255,255,255,0.62)', textTransform: 'uppercase', marginBottom: 14 }}>
+	                      THOUGHT NOTES / STICKY WALL
+	                    </div>
+	                    <h2
+	                      style={{
+	                        fontFamily: "'Oswald', sans-serif",
+	                        fontSize: 'clamp(42px, 5vw, 62px)',
+	                        fontWeight: 700,
+	                        color: 'white',
+	                        margin: '0 0 18px',
+	                        lineHeight: 1,
+	                      }}
+	                    >
+	                      观点见解
+	                    </h2>
+	                    <p style={{ color: 'rgba(255,255,255,0.86)', fontSize: 13.2, lineHeight: 1.85, maxWidth: 520, margin: 0, fontWeight: 500 }}>
+	                      我会把对产品、AI、学习和工具的观察先写成短句，再不断用项目实践验证它们。这里更像一面便利贴墙，保留那些值得反复提醒自己的判断。
+	                    </p>
+	                  </div>
+
+	                  <div>
+	                    <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.42)', marginBottom: 18 }} />
+	                    <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: 12, lineHeight: 1.7, maxWidth: 420, margin: 0, fontWeight: 600 }}>
+	                      把抽象想法写成一句能执行的话，再回到作品里检验。
+	                    </p>
+	                  </div>
+	                </section>
+
+	                <div
+	                  style={{
+	                    position: 'absolute',
+	                    right: 52,
+	                    top: 62,
+	                    width: 450,
+	                    height: 350,
+	                    zIndex: 3,
+	                  }}
+	                >
+	                  {insightNotes.map((note, i) => {
+	                    const slot = insightNoteSlots[i]
+	                    return (
+	                      <div
+	                        key={note.title}
+	                        style={{
+	                          position: 'absolute',
+	                          left: slot.left,
+	                          top: slot.top,
+	                          width: 132,
+	                          minHeight: 124,
+	                          padding: '18px 16px 16px',
+	                          borderRadius: 9,
+	                          background: 'linear-gradient(160deg, rgba(255,246,184,0.88), rgba(255,178,84,0.72))',
+	                          border: '1px solid rgba(255,255,255,0.42)',
+	                          boxShadow: '0 22px 26px rgba(82,31,4,0.2), inset 0 1px 0 rgba(255,255,255,0.44)',
+	                          color: 'rgba(93,39,6,0.88)',
+	                          transform: `rotate(${note.rotation}deg)`,
+	                        }}
+	                      >
+	                        <div
+	                          style={{
+	                            position: 'absolute',
+	                            left: '50%',
+	                            top: -10,
+	                            width: 46,
+	                            height: 18,
+	                            borderRadius: 5,
+	                            background: 'rgba(255,255,255,0.34)',
+	                            border: '1px solid rgba(255,255,255,0.24)',
+	                            transform: 'translateX(-50%)',
+	                          }}
+	                        />
+	                        <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 8 }}>{note.title}</div>
+	                        <div style={{ fontSize: 11.2, lineHeight: 1.48, fontWeight: 700 }}>{note.note}</div>
+	                      </div>
+	                    )
+	                  })}
+	                </div>
+	              </div>
+	              </div>
+
+		            </div>
+	            </LiquidGlass>
+	            <div
+	              style={{
+	                position: 'absolute',
+	                left: '50%',
+	                top: 'calc(50% + max(215px, min(250px, calc((100vh - 160px) / 2))) + 28px)',
+	                transform: 'translateX(-50%)',
+	                zIndex: 8,
+	                display: 'flex',
+	                flexDirection: 'column',
+	                alignItems: 'center',
+	                gap: 9,
+	                pointerEvents: 'none',
+	              }}
+	            >
+	              <div
+	                aria-hidden="true"
+	                style={{
+	                  display: 'flex',
+	                  alignItems: 'center',
+	                  justifyContent: 'center',
+	                  gap: 9,
+	                }}
+	              >
+	                {skillWalls.map((wall, index) => {
+	                  const active = activeSkillWall === index
+	                  return (
+	                    <span
+	                      key={wall.title}
+	                      style={{
+	                        width: 8,
+	                        height: 8,
+	                        borderRadius: 999,
+	                        background: active ? 'rgba(255,255,255,0.94)' : 'rgba(255,255,255,0.38)',
+	                        transition: 'background 220ms ease',
+	                      }}
+	                    />
+	                  )
+	                })}
+	              </div>
+	              <div
+	                style={{
+	                  color: 'rgba(255,255,255,0.76)',
+	                  fontSize: 13,
+	                  fontWeight: 800,
+	                  lineHeight: 1.4,
+	                  textShadow: '0 2px 10px rgba(82,31,4,0.26)',
+	                  whiteSpace: 'nowrap',
+	                }}
+	              >
+	                滚动鼠标滚轮切换下一页
+	              </div>
 	            </div>
-            </LiquidGlass>
-	          </div>
+		          </div>
         </div>
       )}
 
