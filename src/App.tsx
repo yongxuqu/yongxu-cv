@@ -1,4 +1,4 @@
-import { type CSSProperties, type PointerEvent, useEffect, useRef, useState } from 'react'
+import { type CSSProperties, type MouseEvent, type PointerEvent, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import LiquidGlass from 'liquid-glass-react'
 import * as THREE from 'three'
@@ -690,6 +690,86 @@ function LargeLiquidFolder({ accent, title }: { accent: string; title: string })
   )
 }
 
+function BookDetailCloseButton({ onClose, zIndex = 6 }: { onClose: () => void; zIndex?: number }) {
+  const closingRef = useRef(false)
+
+  const requestClose = () => {
+    if (closingRef.current) return
+    closingRef.current = true
+    onClose()
+  }
+
+  const handlePointerDown = (event: PointerEvent<HTMLElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+    requestClose()
+  }
+
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+    requestClose()
+  }
+
+  return (
+    <div
+      data-allow-scroll="true"
+      onPointerDown={handlePointerDown}
+      onClick={handleClick}
+      style={{
+        position: 'absolute',
+        right: 18,
+        top: 'max(34px, calc(env(safe-area-inset-top) + 24px))',
+        zIndex,
+        width: 70,
+        height: 70,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'auto',
+        touchAction: 'manipulation',
+      }}
+    >
+      <LiquidGlass
+        displacementScale={42}
+        blurAmount={0.12}
+        saturation={132}
+        aberrationIntensity={1.4}
+        elasticity={0}
+        cornerRadius={999}
+        padding="0"
+        mode="polar"
+      >
+        <button
+          type="button"
+          aria-label="关闭书籍详情"
+          onPointerDown={handlePointerDown}
+          onClick={handleClick}
+          style={{
+            width: 52,
+            height: 52,
+            borderRadius: 999,
+            border: '1px solid rgba(255,255,255,0.34)',
+            background: 'rgba(255,255,255,0.14)',
+            color: 'rgba(255,255,255,0.94)',
+            fontSize: 30,
+            fontWeight: 500,
+            lineHeight: '48px',
+            cursor: 'pointer',
+            outline: 'none',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.26), 0 12px 28px rgba(0,0,0,0.18)',
+            textAlign: 'center',
+            pointerEvents: 'auto',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          ×
+        </button>
+      </LiquidGlass>
+    </div>
+  )
+}
+
 function ImmersiveBookDetail({
   book,
   selectedIndex,
@@ -1213,29 +1293,7 @@ function ImmersiveBookDetail({
         color: 'white',
       }}
     >
-      <button
-        type="button"
-        aria-label="关闭书籍详情"
-        onClick={onClose}
-        style={{
-          position: 'absolute',
-          right: 28,
-          top: 24,
-          zIndex: 6,
-          width: 44,
-          height: 44,
-          borderRadius: 999,
-          border: '1px solid rgba(255,255,255,0.32)',
-          background: 'rgba(20,12,8,0.26)',
-          color: 'rgba(255,255,255,0.92)',
-          fontSize: 30,
-          lineHeight: '40px',
-          cursor: 'pointer',
-          backdropFilter: 'blur(14px)',
-        }}
-      >
-        ×
-      </button>
+      <BookDetailCloseButton onClose={onClose} zIndex={6} />
 
       <div
         ref={canvasHostRef}
@@ -1346,30 +1404,7 @@ function ReadingBookDetailOverlay({ book, onClose }: { book: (typeof readingShel
           pointerEvents: 'none',
         }}
       >
-        <button
-          type="button"
-          aria-label="关闭书籍详情"
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            right: 28,
-            top: 24,
-            zIndex: 2,
-            width: 44,
-            height: 44,
-            borderRadius: 999,
-            border: '1px solid rgba(255,255,255,0.32)',
-            background: 'rgba(20,12,8,0.26)',
-            color: 'rgba(255,255,255,0.92)',
-            fontSize: 30,
-            lineHeight: '40px',
-            cursor: 'pointer',
-            backdropFilter: 'blur(14px)',
-            pointerEvents: 'auto',
-          }}
-        >
-          ×
-        </button>
+        <BookDetailCloseButton onClose={onClose} zIndex={5} />
 
         <section
           style={{
