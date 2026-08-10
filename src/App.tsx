@@ -174,7 +174,6 @@ const skillGroups = [
 const skillWalls = [
   { title: '软件技能', displayTitle: '个人技能', label: 'SOFTWARE', color: hoodieOrange },
   { title: '读书感悟', displayTitle: '读书感悟', label: 'READING', color: '#d87922' },
-  { title: '观点见解', displayTitle: '观点见解', label: 'THOUGHTS', color: '#c9571a' },
 ]
 
 type ReadingShelfBook = {
@@ -235,7 +234,21 @@ const trimTexture = (texture: THREE.Texture | null, trimX = 0, trimY = 0) => {
   texture.needsUpdate = true
 }
 
-const getBookRendererPixelRatio = () => Math.min(window.devicePixelRatio || 1, 3)
+const isAppleSafariBrowser = () => {
+  if (typeof navigator === 'undefined') return false
+
+  const userAgent = navigator.userAgent
+  const platform = navigator.platform
+  const isAppleDevice = /Mac|iPhone|iPad|iPod/i.test(platform)
+  const isSafari = /Safari/i.test(userAgent) && !/Chrome|Chromium|CriOS|FxiOS|Edg/i.test(userAgent)
+
+  return isAppleDevice && isSafari
+}
+
+const getBookRendererPixelRatio = () => {
+  const devicePixelRatio = typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1
+  return Math.min(devicePixelRatio, isAppleSafariBrowser() ? 3 : 1.75)
+}
 
 const prepareBookTexture = (texture: THREE.Texture, maxAnisotropy: number) => {
   texture.colorSpace = THREE.SRGBColorSpace
@@ -244,7 +257,7 @@ const prepareBookTexture = (texture: THREE.Texture, maxAnisotropy: number) => {
   texture.generateMipmaps = false
   texture.minFilter = THREE.LinearFilter
   texture.magFilter = THREE.LinearFilter
-  texture.anisotropy = Math.max(1, maxAnisotropy)
+  texture.anisotropy = Math.max(1, Math.min(maxAnisotropy, isAppleSafariBrowser() ? 8 : 4))
   texture.needsUpdate = true
   return texture
 }
@@ -510,7 +523,7 @@ const readingShelfBooks: ReadingShelfBook[] = [
     pageSpineInsetRatio: 0.006,
     pageForeInsetRatio: 0.024,
     foreEdgeStripScale: 0.64,
-    dimensionsMm: { coverWidth: 135, coverHeight: 210, spineDepth: 28 },
+    dimensionsMm: { coverWidth: 135, coverHeight: 195, spineDepth: 9 },
   },
   {
     title: '老人与海',
@@ -552,22 +565,6 @@ const readingShelfBooks: ReadingShelfBook[] = [
     foreEdgeStripScale: 0.68,
     dimensionsMm: { coverWidth: 148, coverHeight: 210, spineDepth: 18 },
   },
-]
-
-const insightNotes = [
-  { title: '产品', note: '产品判断先于功能堆叠，先回答为什么存在。', rotation: -5 },
-  { title: 'AI', note: 'AI 是原型速度的放大器，关键仍是提出好问题。', rotation: 4 },
-  { title: '学习', note: '学习要落到作品、验证和复盘，才会真正留下来。', rotation: -2 },
-  { title: '工具', note: '好工具应该降低下一次行动成本，而不是增加流程。', rotation: 5 },
-  { title: '长期', note: '长期记录会把灵感变成资产，也能校准判断。', rotation: -4 },
-]
-
-const insightNoteSlots = [
-  { left: 12, top: 34 },
-  { left: 150, top: 8 },
-  { left: 288, top: 52 },
-  { left: 68, top: 200 },
-  { left: 238, top: 188 },
 ]
 
 const appSpreadSlots = [
@@ -729,7 +726,7 @@ function ImmersiveBookDetail({
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
-      preserveDrawingBuffer: true,
+      preserveDrawingBuffer: false,
       powerPreference: 'high-performance',
     })
     renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -1442,7 +1439,7 @@ function ReadingShelf3D({ active, books }: { active: boolean; books: typeof read
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
-      preserveDrawingBuffer: true,
+      preserveDrawingBuffer: false,
       powerPreference: 'high-performance',
     })
     renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -1823,6 +1820,7 @@ function ReadingShelf3D({ active, books }: { active: boolean; books: typeof read
     let detailTargetPitch = -0.04
     let detailCurrentYaw = -0.08
     let detailCurrentPitch = -0.04
+    let currentRendererPixelRatio = 0
 
     const easeInCubic = (progress: number) => progress * progress * progress
     const easeOutCubic = (progress: number) => 1 - Math.pow(1 - progress, 3)
@@ -1854,13 +1852,31 @@ function ReadingShelf3D({ active, books }: { active: boolean; books: typeof read
       })
     }
 
-    const resizeRendererTo = (width: number, height: number) => {
+    const syncRendererPixelRatio = () => {
+      const nextPixelRatio = getBookRendererPixelRatio()
+      if (Math.abs(currentRendererPixelRatio - nextPixelRatio) < 0.001) return
+
+      renderer.setPixelRatio(nextPixelRatio)
+      currentRendererPixelRatio = nextPixelRatio
+    }
+
+    const updateCameraAspect = (width: number, height: number) => {
       const nextWidth = Math.max(1, Math.floor(width))
       const nextHeight = Math.max(1, Math.floor(height))
       camera.aspect = nextWidth / nextHeight
       camera.updateProjectionMatrix()
-      renderer.setPixelRatio(getBookRendererPixelRatio())
+    }
+
+    const resizeRendererBufferTo = (width: number, height: number) => {
+      const nextWidth = Math.max(1, Math.floor(width))
+      const nextHeight = Math.max(1, Math.floor(height))
+      syncRendererPixelRatio()
       renderer.setSize(nextWidth, nextHeight, false)
+    }
+
+    const resizeRendererTo = (width: number, height: number) => {
+      updateCameraAspect(width, height)
+      resizeRendererBufferTo(width, height)
     }
 
     const placePromotedCanvas = (rect: { left: number; top: number; width: number; height: number }) => {
@@ -1869,7 +1885,7 @@ function ReadingShelf3D({ active, books }: { active: boolean; books: typeof read
       renderer.domElement.style.top = `${rect.top}px`
       renderer.domElement.style.width = `${rect.width}px`
       renderer.domElement.style.height = `${rect.height}px`
-      resizeRendererTo(rect.width, rect.height)
+      updateCameraAspect(rect.width, rect.height)
     }
 
     const restoreCanvasToShelf = () => {
@@ -1904,6 +1920,7 @@ function ReadingShelf3D({ active, books }: { active: boolean; books: typeof read
       renderer.domElement.style.cursor = 'default'
       renderer.domElement.style.touchAction = 'none'
       document.body.appendChild(renderer.domElement)
+      resizeRendererBufferTo(window.innerWidth, window.innerHeight)
       placePromotedCanvas(promotionStartRect)
     }
 
@@ -1934,16 +1951,12 @@ function ReadingShelf3D({ active, books }: { active: boolean; books: typeof read
 
     const resize = () => {
       if (promotedCanvas) {
+        resizeRendererBufferTo(window.innerWidth, window.innerHeight)
         placePromotedCanvas(currentCanvasRect)
         return
       }
       const rect = container.getBoundingClientRect()
-      const width = Math.max(1, Math.floor(rect.width))
-      const height = Math.max(1, Math.floor(rect.height))
-      camera.aspect = width / height
-      camera.updateProjectionMatrix()
-      renderer.setPixelRatio(getBookRendererPixelRatio())
-      renderer.setSize(width, height, false)
+      resizeRendererTo(rect.width, rect.height)
     }
 
     const resizeObserver = new ResizeObserver(resize)
@@ -2102,18 +2115,27 @@ function ReadingShelf3D({ active, books }: { active: boolean; books: typeof read
         }
 
         if (promotedCanvas) {
-          placePromotedCanvas({
+          const nextCanvasRect = {
             left: THREE.MathUtils.lerp(promotionStartRect.left, fullRect.left, canvasProgress),
             top: THREE.MathUtils.lerp(promotionStartRect.top, fullRect.top, canvasProgress),
             width: THREE.MathUtils.lerp(promotionStartRect.width, fullRect.width, canvasProgress),
             height: THREE.MathUtils.lerp(promotionStartRect.height, fullRect.height, canvasProgress),
-          })
+          }
+          const canvasRectChanged =
+            Math.abs(currentCanvasRect.left - nextCanvasRect.left) > 0.5 ||
+            Math.abs(currentCanvasRect.top - nextCanvasRect.top) > 0.5 ||
+            Math.abs(currentCanvasRect.width - nextCanvasRect.width) > 0.5 ||
+            Math.abs(currentCanvasRect.height - nextCanvasRect.height) > 0.5
+
+          if (canvasRectChanged) placePromotedCanvas(nextCanvasRect)
         }
 
         detailCurrentYaw = settle(detailCurrentYaw, detailTargetYaw, detailInteractionReady ? 0.13 : 0.2)
         detailCurrentPitch = settle(detailCurrentPitch, detailTargetPitch, detailInteractionReady ? 0.13 : 0.2)
 
         bookEntries.forEach(({ pivot, frontCoverHinge, updateHingeBridge }, index) => {
+          if (detailSettled && index !== selectedIndex) return
+
           const startX = pivot.userData.transitionStartX ?? pivot.position.x
           const startY = pivot.userData.transitionStartY ?? pivot.position.y
           const startZ = pivot.userData.transitionStartZ ?? pivot.position.z
@@ -2253,7 +2275,7 @@ function HomeGlbModel({ active = true, style }: { active?: boolean; style?: CSSP
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
-      preserveDrawingBuffer: true,
+      preserveDrawingBuffer: false,
       powerPreference: 'high-performance',
     })
     renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -2851,7 +2873,7 @@ export default function App() {
         >
           <div style={{ display: 'flex', gap: 2 }}>
             {(['home', 'videos', 'skills'] as Page[]).map((p, i) => {
-              const labels = ['主页', '项目', '技能']
+              const labels = ['主页', '项目', '关于']
               const active = page === p
               return (
                 <button
@@ -3307,7 +3329,7 @@ export default function App() {
               <div
                 style={{
                   position: 'absolute',
-                  left: skillWallTrackIndex > skillWalls.length - 1 ? '300%' : '0%',
+                  left: skillWallTrackIndex > skillWalls.length - 1 ? `${skillWalls.length * 100}%` : '0%',
                   top: 0,
                   width: '100%',
                   height: '100%',
@@ -3534,7 +3556,7 @@ export default function App() {
 		              <div
 		                style={{
 		                  position: 'absolute',
-	                  left: '100%',
+	                  left: skillWallTrackIndex < 0 ? '-100%' : '100%',
 	                  top: 0,
 	                  width: '100%',
 	                  height: '100%',
@@ -3560,107 +3582,6 @@ export default function App() {
 		                </div>
 	              </div>
 
-	              <div
-	                style={{
-	                  position: 'absolute',
-	                  left: skillWallTrackIndex < 0 ? '-100%' : '200%',
-	                  top: 0,
-	                  width: '100%',
-	                  height: '100%',
-		                  overflow: 'hidden',
-		                }}
-		              >
-			                <section
-	                  style={{
-	                    position: 'relative',
-	                    zIndex: 2,
-	                    width: '47%',
-	                    height: '100%',
-	                    padding: '46px 52px 38px',
-	                    display: 'flex',
-	                    flexDirection: 'column',
-	                    justifyContent: 'space-between',
-	                  }}
-	                >
-	                  <div>
-	                    <div style={{ fontSize: 11, letterSpacing: 4, color: 'rgba(255,255,255,0.62)', textTransform: 'uppercase', marginBottom: 14 }}>
-	                      THOUGHT NOTES / STICKY WALL
-	                    </div>
-	                    <h2
-	                      style={{
-	                        fontFamily: "'Oswald', sans-serif",
-	                        fontSize: 'clamp(42px, 5vw, 62px)',
-	                        fontWeight: 700,
-	                        color: 'white',
-	                        margin: '0 0 18px',
-	                        lineHeight: 1,
-	                      }}
-	                    >
-	                      观点见解
-	                    </h2>
-	                    <p style={{ color: 'rgba(255,255,255,0.86)', fontSize: 13.2, lineHeight: 1.85, maxWidth: 520, margin: 0, fontWeight: 500 }}>
-	                      我会把对产品、AI、学习和工具的观察先写成短句，再不断用项目实践验证它们。这里更像一面便利贴墙，保留那些值得反复提醒自己的判断。
-	                    </p>
-	                  </div>
-
-	                  <div>
-	                    <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.42)', marginBottom: 18 }} />
-	                    <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: 12, lineHeight: 1.7, maxWidth: 420, margin: 0, fontWeight: 600 }}>
-	                      把抽象想法写成一句能执行的话，再回到作品里检验。
-	                    </p>
-	                  </div>
-	                </section>
-
-	                <div
-	                  style={{
-	                    position: 'absolute',
-	                    right: 52,
-	                    top: 62,
-	                    width: 450,
-	                    height: 350,
-	                    zIndex: 3,
-	                  }}
-	                >
-	                  {insightNotes.map((note, i) => {
-	                    const slot = insightNoteSlots[i]
-	                    return (
-	                      <div
-	                        key={note.title}
-	                        style={{
-	                          position: 'absolute',
-	                          left: slot.left,
-	                          top: slot.top,
-	                          width: 132,
-	                          minHeight: 124,
-	                          padding: '18px 16px 16px',
-	                          borderRadius: 9,
-	                          background: 'linear-gradient(160deg, rgba(255,246,184,0.88), rgba(255,178,84,0.72))',
-	                          border: '1px solid rgba(255,255,255,0.42)',
-	                          boxShadow: '0 22px 26px rgba(82,31,4,0.2), inset 0 1px 0 rgba(255,255,255,0.44)',
-	                          color: 'rgba(93,39,6,0.88)',
-	                          transform: `rotate(${note.rotation}deg)`,
-	                        }}
-	                      >
-	                        <div
-	                          style={{
-	                            position: 'absolute',
-	                            left: '50%',
-	                            top: -10,
-	                            width: 46,
-	                            height: 18,
-	                            borderRadius: 5,
-	                            background: 'rgba(255,255,255,0.34)',
-	                            border: '1px solid rgba(255,255,255,0.24)',
-	                            transform: 'translateX(-50%)',
-	                          }}
-	                        />
-	                        <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 8 }}>{note.title}</div>
-	                        <div style={{ fontSize: 11.2, lineHeight: 1.48, fontWeight: 700 }}>{note.note}</div>
-	                      </div>
-	                    )
-	                  })}
-	                </div>
-	              </div>
 	              </div>
 
 		            </div>
