@@ -63,6 +63,15 @@ const projects = [
     poster: '/assets/projects/colorlog-icon.png',
     posterKind: 'appIcon',
     showTitleLogo: true,
+    website: 'https://colorlog.top',
+    showcaseImages: [
+      '/assets/projects/colorlog-showcase-1.jpg',
+      '/assets/projects/colorlog-showcase-2.jpg',
+      '/assets/projects/colorlog-showcase-3.jpg',
+      '/assets/projects/colorlog-showcase-4.jpg',
+      '/assets/projects/colorlog-showcase-5.jpg',
+      '/assets/projects/colorlog-showcase-6.jpg',
+    ],
   },
   {
     id: 3,
@@ -74,6 +83,14 @@ const projects = [
     poster: '/assets/projects/jiuchangshi-icon.png',
     posterKind: 'appIcon',
     showTitleLogo: true,
+    showcaseImages: [
+      '/assets/projects/jiuchangshi-showcase-1.png',
+      '/assets/projects/jiuchangshi-showcase-2.png',
+      '/assets/projects/jiuchangshi-showcase-3.png',
+      '/assets/projects/jiuchangshi-showcase-4.png',
+      '/assets/projects/jiuchangshi-showcase-5.png',
+      '/assets/projects/jiuchangshi-showcase-6.png',
+    ],
   },
   {
     id: 4,
@@ -84,6 +101,7 @@ const projects = [
     highlights: ['围绕真实业务流程拆解报价、材料和客户信息结构', '实现扫描识别后的数据整理与计算流程', '将复杂重复工作封装成可复用的报价生成工具'],
     poster: '/assets/projects/home-quote-icon.png',
     posterKind: 'appIcon',
+    showcaseImages: ['/assets/projects/home-quote-showcase-1.png'],
   },
   {
     id: 5,
@@ -95,6 +113,13 @@ const projects = [
     highlights: ['负责技术路线、产品应用和商业化方案梳理', '参与竞赛 PPT、视频和答辩材料优化', '推动团队获得 2024 山东省金奖、2025 山东省银奖'],
     poster: '/assets/projects/innovation-competition-icon.png',
     posterKind: 'appIcon',
+    showcaseLayout: 'landscapeDeck',
+    showcaseImages: [
+      '/assets/projects/innovation-showcase-1.png',
+      '/assets/projects/innovation-showcase-2.png',
+      '/assets/projects/innovation-showcase-3.png',
+      '/assets/projects/innovation-showcase-4.jpg',
+    ],
   },
   {
     id: 6,
@@ -105,6 +130,12 @@ const projects = [
     highlights: ['负责文献调研、实验测试和阶段性数据整理', '围绕课题组方向做反应流程理解与方案延伸', '提升科研思维、实验操作和问题分析能力'],
     poster: '/assets/projects/dachuang-icon.png',
     posterKind: 'appIcon',
+    showcaseLayout: 'labDuo',
+    showcaseImages: [
+      '/assets/projects/dachuang-showcase-3.jpg',
+      '/assets/projects/dachuang-showcase-1.jpg',
+      '/assets/projects/dachuang-showcase-2.jpg',
+    ],
   },
 ]
 
@@ -2948,6 +2979,7 @@ export default function App() {
   const projectDetailOpacity = isProjectStoryActive ? Math.max(0, 1 - projectIntroProgress * 1.28) : 1
   const projectWorkPanelProgress = isProjectStoryActive ? Math.max(0, Math.min(1, (projectStoryProgress - 0.62) / 1.38)) : 0
   const selectedProjectExitProgress = isProjectStoryActive ? Math.max(0, Math.min(1, (projectWorkProgress - 0.82) / 1.18)) : 0
+  const activeProjectWebsiteLabel = projects[activeProject].website?.replace(/^https?:\/\//, '').replace(/\/$/, '') ?? ''
   const selectedAppSlots =
     selectedSkill.apps.length === 2
       ? [
@@ -3296,7 +3328,7 @@ export default function App() {
                     textShadow: '0 2px 8px rgba(92,37,6,0.18)',
                   }}
                 >
-                  网站：limuai.app
+                  网站：{activeProjectWebsiteLabel}
                 </a>
               )}
             </div>
@@ -3306,9 +3338,9 @@ export default function App() {
                 aria-hidden="true"
                 style={{
                   position: 'absolute',
-                  right: 'clamp(58px, 7vw, 108px)',
+                  right: 'clamp(72px, 8vw, 128px)',
                   top: 136,
-                  width: 'min(44vw, 640px)',
+                  width: 'min(46vw, 680px)',
                   height: 'min(54vh, 500px)',
                   zIndex: 1,
                   perspective: 1040,
@@ -3319,6 +3351,11 @@ export default function App() {
                   pointerEvents: projectIntroProgress < 0.82 ? 'auto' : 'none',
                 }}
                 onMouseMove={(event) => {
+                  if (
+                    projects[activeProject].showcaseLayout === 'landscapeDeck' ||
+                    projects[activeProject].showcaseLayout === 'labDuo'
+                  )
+                    return
                   const images = projects[activeProject].showcaseImages
                   const rect = event.currentTarget.getBoundingClientRect()
                   const ratio = (event.clientX - rect.left) / rect.width
@@ -3327,8 +3364,169 @@ export default function App() {
                 }}
                 onMouseLeave={() => setHoveredShowcaseIndex(null)}
               >
-                {projects[activeProject].showcaseImages.map((image, imageIndex) => {
+                {projects[activeProject].showcaseLayout === 'landscapeDeck' ? (
+                  projects[activeProject].showcaseImages.map((image, imageIndex) => {
+                    const landscapeSlots = [
+                      { left: 35, top: 34, rotate: -4.5, z: 36 },
+                      { left: 82, top: 39, rotate: 3.5, z: 18 },
+                      { left: 37, top: 80, rotate: 3.2, z: 18 },
+                      { left: 84, top: 84, rotate: -3.8, z: 0 },
+                    ]
+                    const slot = landscapeSlots[imageIndex] ?? landscapeSlots[landscapeSlots.length - 1]
+
+                    return (
+                      <div
+                        key={image}
+                        style={{
+                          position: 'absolute',
+                          left: `${slot.left}%`,
+                          top: `${slot.top}%`,
+                          width: '48%',
+                          transform: `translate3d(-50%, -50%, ${slot.z}px) rotateY(-8deg) rotateX(4deg) rotateZ(${slot.rotate}deg)`,
+                          transformStyle: 'preserve-3d',
+                          zIndex: 12 - imageIndex,
+                          transition: 'transform 220ms ease-out',
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        <img
+                          src={image}
+                          alt=""
+                          draggable={false}
+                          style={{
+                            position: 'relative',
+                            width: '100%',
+                            height: 'auto',
+                            objectFit: 'contain',
+                            display: 'block',
+                            borderRadius: 14,
+                            boxShadow: '0 20px 44px rgba(35,43,86,0.24), 0 0 0 1px rgba(255,255,255,0.2)',
+                            transform: 'translateZ(36px)',
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            borderRadius: 18,
+                            pointerEvents: 'none',
+                            background: 'linear-gradient(118deg, rgba(255,255,255,0.16), rgba(255,255,255,0) 30%)',
+                            transform: 'translateZ(38px)',
+                          }}
+                        />
+                      </div>
+                    )
+                  })
+                ) : projects[activeProject].showcaseLayout === 'labDuo' ? (
+                  projects[activeProject].showcaseImages.map((image, imageIndex) => {
+                    const labSlots = [
+                      { left: 56, top: 24, width: 92, rotate: -1.2, z: 104 },
+                      { left: 39, top: 62, width: 62, rotate: -4.2, z: 72 },
+                      { left: 68, top: 68, width: 76, rotate: 3.2, z: -34 },
+                    ]
+                    const slot = labSlots[imageIndex] ?? labSlots[labSlots.length - 1]
+
+                    return (
+                      <div
+                        key={image}
+                        style={{
+                          position: 'absolute',
+                          left: `${slot.left}%`,
+                          top: `${slot.top}%`,
+                          width: `${slot.width}%`,
+                          transform: `translate3d(-50%, -50%, ${slot.z}px) rotateY(-8deg) rotateX(3deg) rotateZ(${slot.rotate}deg)`,
+                          transformStyle: 'preserve-3d',
+                          zIndex: imageIndex === 0 ? 30 : 22 - imageIndex,
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        <img
+                          src={image}
+                          alt=""
+                          draggable={false}
+                          style={{
+                            position: 'relative',
+                            width: '100%',
+                            height: 'auto',
+                            objectFit: 'contain',
+                            display: 'block',
+                            borderRadius: 16,
+                            boxShadow:
+                              imageIndex === 0
+                                ? '0 20px 42px rgba(77,29,4,0.22), 0 0 0 1px rgba(255,255,255,0.22)'
+                                : '0 28px 58px rgba(77,29,4,0.28), 0 0 0 1px rgba(255,255,255,0.18)',
+                            transform: 'translateZ(36px)',
+                          }}
+                        />
+                      </div>
+                    )
+                  })
+                ) : projects[activeProject].showcaseImages.length === 1 ? (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: '49%',
+                      top: '52%',
+                      width: 'min(96%, 720px)',
+                      transform: 'translate3d(-50%, -50%, 0) rotateY(-14deg) rotateX(5deg) rotateZ(-1.4deg)',
+                      transformStyle: 'preserve-3d',
+                      transition: 'transform 320ms cubic-bezier(0.2, 0.9, 0.22, 1)',
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        borderRadius: 18,
+                        background: 'rgba(255,255,255,0.18)',
+                        transform: 'translate3d(28px, 22px, -88px)',
+                        filter: 'blur(0.2px)',
+                        boxShadow: '0 28px 58px rgba(78,30,4,0.2)',
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        borderRadius: 18,
+                        background: 'rgba(255,255,255,0.12)',
+                        transform: 'translate3d(52px, 42px, -154px)',
+                        boxShadow: '0 30px 64px rgba(78,30,4,0.16)',
+                      }}
+                    />
+                    <img
+                      src={projects[activeProject].showcaseImages[0]}
+                      alt=""
+                      draggable={false}
+                      style={{
+                        position: 'relative',
+                        width: '100%',
+                        height: 'auto',
+                        objectFit: 'contain',
+                        display: 'block',
+                        borderRadius: 18,
+                        boxShadow: '0 32px 72px rgba(77,29,4,0.28), 0 0 0 1px rgba(255,255,255,0.32)',
+                        transform: 'translateZ(76px)',
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        borderRadius: 18,
+                        pointerEvents: 'none',
+                        background: 'linear-gradient(120deg, rgba(255,255,255,0.2), rgba(255,255,255,0) 34%)',
+                        transform: 'translateZ(78px)',
+                      }}
+                    />
+                  </div>
+                ) : (
+                  projects[activeProject].showcaseImages.map((image, imageIndex) => {
+                  const images = projects[activeProject].showcaseImages
                   const slot = showcaseStackSlots[imageIndex] ?? showcaseStackSlots[showcaseStackSlots.length - 1]
+                  const spreadRatio = images.length > 1 ? imageIndex / (images.length - 1) : 0.5
+                  const spreadLeft = 11 + spreadRatio * 78
+                  const spreadDepth = -58 + spreadRatio * 116
                   const focused = hoveredShowcaseIndex === imageIndex
                   const muted = hoveredShowcaseIndex !== null && !focused
 
@@ -3341,11 +3539,11 @@ export default function App() {
                       onMouseEnter={() => setHoveredShowcaseIndex(imageIndex)}
                       style={{
                         position: 'absolute',
-                        left: `${slot.left}%`,
+                        left: `${spreadLeft}%`,
                         top: `${slot.top}%`,
-                        width: focused ? '25.5%' : '20.5%',
+                        width: 'auto',
                         height: focused ? '78%' : '68%',
-                        objectFit: 'cover',
+                        objectFit: 'contain',
                         objectPosition: 'center',
                         borderRadius: focused ? 24 : 20,
                         display: 'block',
@@ -3358,14 +3556,15 @@ export default function App() {
                           : '0 13px 28px rgba(77,29,4,0.14)',
                         transform: focused
                           ? 'translate3d(-50%, -50%, 112px) rotateY(0deg) rotateZ(0deg) scale(1.03)'
-                          : `translate3d(-50%, -50%, ${slot.depth}px) rotateY(0deg) rotateZ(0deg) scale(${muted ? 0.985 : 1})`,
+                          : `translate3d(-50%, -50%, ${spreadDepth}px) rotateY(0deg) rotateZ(0deg) scale(${muted ? 0.985 : 1})`,
                         transformStyle: 'preserve-3d',
                         transition:
                           'transform 320ms cubic-bezier(0.2, 0.9, 0.22, 1), width 320ms ease, height 320ms ease, opacity 220ms ease, box-shadow 320ms ease, border-radius 320ms ease',
                       }}
                     />
                   )
-                })}
+                  })
+                )}
               </div>
             )}
 
@@ -3484,7 +3683,7 @@ export default function App() {
                     : 0
                 const selectedTargetX = 236 - i * 152
                 const selectedCardX = isSelectedStoryCard ? projectIntroProgress * selectedTargetX - selectedProjectExitProgress * 116 : 0
-                const selectedCardY = isSelectedStoryCard ? projectIntroProgress * -322 - selectedProjectExitProgress * 18 : cardFallProgress * (780 + i * 58)
+                const selectedCardY = isSelectedStoryCard ? projectIntroProgress * -292 - selectedProjectExitProgress * 18 : cardFallProgress * (780 + i * 58)
                 const storyScale = isSelectedStoryCard ? 1.08 + projectIntroProgress * 0.34 : null
                 const cardScale = storyScale ?? (isAppIconProject ? (active ? 1.08 : 0.94) : active ? 1.05 : 1)
                 const cardOpacity = isProjectStoryActive && !active
