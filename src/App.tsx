@@ -472,6 +472,7 @@ const readingShelfBooks: ReadingShelfBook[] = [
     note: '用短诗写爱、自由、自然和人生，让轻盈的飞鸟带走沉重的心事。',
     color: '#0d49a3',
     accent: '#c8dcff',
+    detailBackdropColor: '#154f8f',
     coverTexture: '/assets/books/stray-birds-cover.png',
     backTexture: '/assets/books/stray-birds-back.png',
     spineTexture: '/assets/books/stray-birds-spine.png',
