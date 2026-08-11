@@ -11,6 +11,12 @@ import { readingReflections } from './readingReflections'
 
 type Page = 'home' | 'videos' | 'skills'
 type PageMotion = 'none' | 'up' | 'down'
+type ProjectContribution = {
+  title: string
+  image: string
+  desc?: string
+  models?: string[]
+}
 
 const pageOrder: Record<Page, number> = {
   home: 0,
@@ -38,10 +44,67 @@ const projects = [
     label: '独立开发者 / AI APP PROJECT 01',
     desc: '「Limu AI」是一款用于建立专属人生博物馆的 AI 应用：通过自动抠图、智能识别、AI 叙事、一键成卡、3D 藏品与成就徽章，系统化整理生活中的物品与故事，把相册里的日常快照凝固成可收藏、可分享、可长期保存的私人数字馆藏。',
     highlights: ['即拍即藏，AI 自动识别主角并生成精美展品卡', '用 AI 叙事补全物品简介、详细描述和私人记忆', '支持 3D 藏品、AR 展示、成就徽章与 iCloud 长期保存'],
+    contributionPoints: ['产品定位、Logo 与商店页设计', 'AI 识别、展品卡与 3D 徽章体系', '代码开发、上架分发与产品宣发'],
     poster: '/assets/projects/limu-ai-icon.png',
     posterKind: 'appIcon',
     showTitleLogo: true,
     website: 'https://limuai.app',
+    download: 'https://apps.apple.com/hk/app/limu-ai-記憶收藏/id6755528227',
+    contributionDetails: [
+      {
+        title: 'Logo 设计',
+        image: '/assets/projects/limu-contribution-logo.png',
+        desc: '围绕“人生博物馆”的概念设计应用图标与品牌识别，统一深蓝与金色的馆藏气质。',
+      },
+      {
+        title: '商店页设计',
+        image: '/assets/projects/limu-contribution-store.png',
+        desc: '整理应用核心卖点、展示素材和发布视觉，设计适合商店页与官网展示的产品介绍画面。',
+      },
+      {
+        title: '成就徽章设计',
+        image: '/assets/projects/limu-contribution-badges.png',
+        desc: '设计不同收藏主题的成就徽章，让用户在持续整理物品时获得更明确的反馈和收集动力。',
+      },
+      {
+        title: '3D 徽章模型制作',
+        image: '/assets/projects/limu-contribution-3d-badges.png',
+        models: [
+          '/assets/projects/limu-badge-models/ArtworkCollector.glb',
+          '/assets/projects/limu-badge-models/AnimalCollector.glb',
+          '/assets/projects/limu-badge-models/Architecture%20Collector.glb',
+          '/assets/projects/limu-badge-models/BookCollector.glb',
+          '/assets/projects/limu-badge-models/Document%20Collector.glb',
+          '/assets/projects/limu-badge-models/FoodCollecter.glb',
+          '/assets/projects/limu-badge-models/LandscapeCollector.glb',
+          '/assets/projects/limu-badge-models/OtherCollector.glb',
+          '/assets/projects/limu-badge-models/PlantCollector.glb',
+          '/assets/projects/limu-badge-models/StampCollector.glb',
+          '/assets/projects/limu-badge-models/WineCollector.glb',
+        ],
+        desc: '制作徽章相关 3D 模型资源，配合应用内的立体展示和成就系统，增强数字馆藏的空间感。',
+      },
+      {
+        title: '产品信息撰写',
+        image: '/assets/projects/limu-contribution-copy.jpg',
+        desc: '撰写产品定位、功能介绍、关键词、隐私政策等信息，把 AI 能力转化为用户能理解的使用场景。',
+      },
+      {
+        title: '代码编写和调试',
+        image: '/assets/projects/limu-contribution-code-debug.png',
+        desc: '完成应用核心功能编写、界面联调和真机调试，持续推进产品从设计到可运行版本落地。',
+      },
+      {
+        title: '产品上传和分发',
+        image: '/assets/projects/limu-contribution-upload-distribution.png',
+        desc: '完成 App Store Connect 版本资料、截图素材、TestFlight 分发与发布流程配置。',
+      },
+      {
+        title: '产品宣发',
+        image: '/assets/projects/limu-contribution-promotion.png',
+        desc: '整理应用展示页面和宣发素材，用更清晰的视觉方式呈现产品定位与核心能力。',
+      },
+    ],
     showcaseImages: [
       '/assets/projects/limu-showcase-1.jpg',
       '/assets/projects/limu-showcase-2.jpg',
@@ -60,10 +123,39 @@ const projects = [
     label: '独立开发者 / APP PROJECT 02',
     desc: 'ColorLog 是一款简单好用、轻松上手的 Plog 创作工具。用户只需要选择照片，就能通过内置的多种精美模板，将照片、Live 和视频快速生成适合发布到小红书、朋友圈、微博等社交平台的高质感 Plog、Live Plog 和视频作品。无论是日常记录、旅行打卡、穿搭分享、美食照片，还是一张普通随手拍，ColorLog 都可以帮你一键生成更有设计感、更有氛围感的视觉作品；同时照片处理在本地完成，目前免费使用，无广告、无订阅。',
     highlights: ['独立完成产品需求、交互流程和核心功能开发', '推进 App Store 上架流程与版本迭代', '沉淀移动端产品从 0 到 1 的完整落地经验'],
+    contributionPoints: ['Logo 与商店页视觉设计', 'Plog 模板编辑与图片处理开发', '上架分发与产品宣发'],
     poster: '/assets/projects/colorlog-icon.png',
     posterKind: 'appIcon',
     showTitleLogo: true,
     website: 'https://colorlog.top',
+    download: 'https://apps.apple.com/cn/app/colorlog/id6763870478',
+    contributionDetails: [
+      {
+        title: 'Logo 设计',
+        image: '/assets/projects/colorlog-contribution-logo.png',
+        desc: '围绕 Plog 创作工具的轻量感和视觉记忆点，设计 ColorLog 应用图标与基础品牌识别。',
+      },
+      {
+        title: '商店页设计',
+        image: '/assets/projects/colorlog-contribution-store.png',
+        desc: '整理应用模板、功能卖点和多语言商店截图，完成适合 App Store 展示的产品视觉素材。',
+      },
+      {
+        title: '代码编写和调试',
+        image: '/assets/projects/colorlog-contribution-code-debug.png',
+        desc: '完成模板编辑、图片处理、导出发布等核心功能开发，并持续进行真机调试和体验优化。',
+      },
+      {
+        title: '产品上传和分发',
+        image: '/assets/projects/colorlog-contribution-upload-distribution.png',
+        desc: '完成 App Store Connect 版本资料、截图素材、TestFlight 分发和上架流程配置。',
+      },
+      {
+        title: '产品宣发',
+        image: '/assets/projects/colorlog-contribution-promotion.jpg',
+        desc: '制作和发布产品展示内容，把模板效果、使用场景和应用价值转化为面向用户的宣发素材。',
+      },
+    ],
     showcaseImages: [
       '/assets/projects/colorlog-showcase-1.jpg',
       '/assets/projects/colorlog-showcase-2.jpg',
@@ -80,9 +172,42 @@ const projects = [
     label: '个人产品 / PROJECT 03',
     desc: '久长时是一款面向 18-35 岁青年情侣的古风情侣 App，用古代书信、故事卷轴、黄历节气、铜币签到等东方意象，承载情侣之间的记录、陪伴与共同生活。产品支持手机号登录、情侣绑定、共同菜单与点菜、纪念日和节日提醒、故事记录、书信往来、记梦、备忘录、签到铜币、厕所记录以及经期和性爱记录等功能，把日常相处中的琐碎、仪式感和私密记忆整理成一套具有古风氛围的亲密关系工具。',
     highlights: ['梳理产品概念、核心用户场景和信息结构', '探索时间记录、节点表达和情绪化交互方式', '作为个人产品方向持续打磨视觉与功能体验'],
+    contributionPoints: ['市场调研与商业计划书', 'Logo、UI 与 UX 原型设计', '前端实现、后端集成与服务端开发'],
     poster: '/assets/projects/jiuchangshi-icon.png',
     posterKind: 'appIcon',
     showTitleLogo: true,
+    contributionDetails: [
+      {
+        title: '市场调研、商业计划书',
+        image: '/assets/projects/jiuchangshi-contribution-market-plan.png',
+        desc: '完成产品定位、目标用户、市场分析与商业计划书整理，明确古风情侣 App 的方向与功能重点。',
+      },
+      {
+        title: '久长时 Logo 设计',
+        image: '/assets/projects/jiuchangshi-contribution-logo.png',
+        desc: '围绕古风情侣产品气质设计应用标识，统一产品视觉识别和基础品牌风格。',
+      },
+      {
+        title: 'UI 设计',
+        image: '/assets/projects/jiuchangshi-contribution-ui.png',
+        desc: '完成核心页面视觉设计，围绕古风、情侣、记录等关键词统一界面风格。',
+      },
+      {
+        title: 'UX 设计',
+        image: '/assets/projects/jiuchangshi-contribution-ux.png',
+        desc: '梳理页面流转、功能入口和用户路径，搭建完整交互原型与操作流程。',
+      },
+      {
+        title: '前端代码、后端集成编写和调试',
+        image: '/assets/projects/jiuchangshi-contribution-frontend-integration.png',
+        desc: '完成移动端前端界面实现、功能联调与后端接口集成，推进核心流程可运行。',
+      },
+      {
+        title: '后端代码编写和调试',
+        image: '/assets/projects/jiuchangshi-contribution-backend.png',
+        desc: '搭建后端服务、接口逻辑与数据处理流程，完成服务端功能编写和调试。',
+      },
+    ],
     showcaseImages: [
       '/assets/projects/jiuchangshi-showcase-1.png',
       '/assets/projects/jiuchangshi-showcase-2.png',
@@ -99,9 +224,68 @@ const projects = [
     label: '独立开发者 / TOOL PROJECT 04',
     desc: '面向家装报价场景开发的效率工具，通过扫描识别、数据整理、价格计算和报价单生成，减少重复录入与人工核算成本。',
     highlights: ['围绕真实业务流程拆解报价、材料和客户信息结构', '实现扫描识别后的数据整理与计算流程', '将复杂重复工作封装成可复用的报价生成工具'],
+    contributionPoints: ['业务调研与报价流程拆解', '扫描识别、数据整理与计算逻辑', '网站部署、测试与流程优化'],
     poster: '/assets/projects/home-quote-icon.png',
     posterKind: 'appIcon',
+    contributionDetails: [
+      {
+        title: '调查研究与构思',
+        image: '/assets/projects/home-quote-contribution-research.png',
+        desc: '围绕家装报价的真实业务流程进行调研，梳理现场尺寸采集、识别表、报价项目和合计金额等核心需求。',
+      },
+      {
+        title: '代码编写与网站部署',
+        image: '/assets/projects/home-quote-contribution-code-deploy.png',
+        desc: '完成前端页面、后端服务、识别导出和部署配置，把报价流程整理成可访问、可使用的网站工具。',
+      },
+      {
+        title: '测试与优化',
+        image: '/assets/projects/home-quote-contribution-test-optimize.png',
+        desc: '结合现场数据和实际表格进行功能测试，持续优化识别、录入、导出和交互流程。',
+      },
+    ],
     showcaseImages: ['/assets/projects/home-quote-showcase-1.png'],
+  },
+  {
+    id: 7,
+    title: '自媒体运营',
+    year: '2026.03 - 至今',
+    label: '自媒体运营 / CREATOR PROJECT 07',
+    desc: '自媒体运营：负责抖音账号（抖音号：334538143）内容策划与运营，进行选题设计、视频制作、发布节奏优化和数据复盘。通过持续优化内容形式与传播策略，实现账号五个月涨粉 1.1w+，视频播放量突破 100w+，点赞量突破 75w+。',
+    highlights: ['负责选题策划、视频制作和发布节奏优化', '持续复盘数据并调整内容形式与传播策略', '五个月涨粉 1.1w+，播放量突破 100w+'],
+    contributionPoints: ['选题策划与账号内容定位', '素材拍摄、整理与剪辑成片', '数据复盘与传播策略优化'],
+    poster: '/assets/projects/media-douyin-icon.png',
+    posterKind: 'appIcon',
+    iconCropScale: 1.42,
+    contributionDetails: [
+      {
+        title: '选题',
+        image: '/assets/projects/media-contribution-topic.png',
+        desc: '围绕账号定位、BGM、文案和传播钩子进行选题构思，提前规划视频表达方向。',
+      },
+      {
+        title: '素材拍摄与整理',
+        image: '/assets/projects/media-contribution-shooting-organizing.png',
+        desc: '持续拍摄、筛选和整理旅行、城市、生活片段等素材，建立可复用的内容素材库。',
+      },
+      {
+        title: '剪辑',
+        image: '/assets/projects/media-contribution-editing.png',
+        desc: '完成视频素材剪辑、节奏调整、画面衔接和发布成片处理。',
+      },
+      {
+        title: '科学优化内容与传播',
+        image: '/assets/projects/media-contribution-optimization.png',
+        desc: '结合数据反馈分析选题、BGM、节奏、文案钩子和传播表现，持续优化内容与发布策略。',
+      },
+    ],
+    showcaseLayout: 'phoneStack',
+    showcaseImages: [
+      '/assets/projects/media-showcase-1.jpg',
+      '/assets/projects/media-showcase-2.png',
+      '/assets/projects/media-showcase-3.png',
+      '/assets/projects/media-showcase-4.png',
+    ],
   },
   {
     id: 5,
@@ -111,8 +295,26 @@ const projects = [
     label: '项目负责人、核心成员 / COMPETITION PROJECT 05',
     desc: '赛事攻坚：参与《石墨烯生产工艺创新与应用产品开发》项目，围绕技术路线、产品应用、市场价值及商业化方案开展调研、方案梳理和内容优化，并完成核心竞赛及答辩材料（PPT、视频），推动团队连续两年获奖，其中 2024 年获山东省金奖，2025 年获山东省银奖。',
     highlights: ['负责技术路线、产品应用和商业化方案梳理', '参与竞赛 PPT、视频和答辩材料优化', '推动团队获得 2024 山东省金奖、2025 山东省银奖'],
+    contributionPoints: ['行业调研与商业计划书整理', '技术路线、产品方案与材料梳理', '路演内容优化与答辩推进'],
     poster: '/assets/projects/innovation-competition-icon.png',
     posterKind: 'appIcon',
+    contributionDetails: [
+      {
+        title: '调研和商业计划书',
+        image: '/assets/projects/innovation-contribution-research-plan.png',
+        desc: '围绕石墨烯材料应用、政策环境、市场规模和商业化路径进行资料调研，整理商业计划书基础内容。',
+      },
+      {
+        title: '方案梳理',
+        image: '/assets/projects/innovation-contribution-scheme.png',
+        desc: '整理项目资料、视频素材、奖项专利和展示文件，推进竞赛材料结构化归档和方案梳理。',
+      },
+      {
+        title: '内容优化',
+        image: '/assets/projects/innovation-contribution-optimization.png',
+        desc: '持续优化竞赛 PPT、产业赛道材料和研发方案内容，提升路演展示与答辩材料的完整度。',
+      },
+    ],
     showcaseLayout: 'landscapeDeck',
     showcaseImages: [
       '/assets/projects/innovation-showcase-1.png',
@@ -128,6 +330,7 @@ const projects = [
     label: '项目负责人 / RESEARCH PROJECT 06',
     desc: '科研探索：参与《燃烧的二氧化碳甲基化硫脲氢化反应》课题研究，负责文献调研、实验测试与数据整理；在项目推进中基于课题组原有研究方向进行延伸与创新，熟悉有机合成实验流程，提升了科研思维、实验操作和问题分析能力。',
     highlights: ['负责文献调研、实验测试和阶段性数据整理', '围绕课题组方向做反应流程理解与方案延伸', '提升科研思维、实验操作和问题分析能力'],
+    contributionPoints: ['文献调研与反应路线理解', '实验操作、现象观察与过程记录', '阶段性数据整理与问题分析'],
     poster: '/assets/projects/dachuang-icon.png',
     posterKind: 'appIcon',
     showcaseLayout: 'labDuo',
@@ -767,7 +970,15 @@ function LargeLiquidFolder({ accent, title }: { accent: string; title: string })
   )
 }
 
-function BookDetailCloseButton({ onClose, zIndex = 6 }: { onClose: () => void; zIndex?: number }) {
+function BookDetailCloseButton({
+  onClose,
+  zIndex = 6,
+  ariaLabel = '关闭详情',
+}: {
+  onClose: () => void
+  zIndex?: number
+  ariaLabel?: string
+}) {
   const closingRef = useRef(false)
 
   const requestClose = () => {
@@ -819,7 +1030,7 @@ function BookDetailCloseButton({ onClose, zIndex = 6 }: { onClose: () => void; z
       >
         <button
           type="button"
-          aria-label="关闭书籍详情"
+          aria-label={ariaLabel}
           onPointerDown={handlePointerDown}
           onClick={handleClick}
           style={{
@@ -2635,11 +2846,253 @@ function HomeGlbModel({ active = true, style }: { active?: boolean; style?: CSSP
   )
 }
 
+function ContributionModelPreview({ image, models, title }: { image: string; models: string[]; title: string }) {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const modelKey = models.join('|')
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const scene = new THREE.Scene()
+    const camera = new THREE.OrthographicCamera(-4.8, 4.8, 2.7, -2.7, 0.1, 100)
+    camera.position.set(0, 0.28, 10)
+    camera.lookAt(0, 0, 0)
+
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: true,
+      preserveDrawingBuffer: false,
+      powerPreference: 'high-performance',
+    })
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.08
+    renderer.setClearColor(0x000000, 0)
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    renderer.domElement.style.width = '100%'
+    renderer.domElement.style.height = '100%'
+    renderer.domElement.style.display = 'block'
+    container.appendChild(renderer.domElement)
+
+    const pmremGenerator = new THREE.PMREMGenerator(renderer)
+    const environmentMap = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture
+    scene.environment = environmentMap
+    scene.environmentIntensity = 1.35
+
+    const group = new THREE.Group()
+    group.position.y = 0
+    scene.add(group)
+
+    const ambientLight = new THREE.HemisphereLight(0xffffff, 0x9a4b18, 0.56)
+    scene.add(ambientLight)
+
+    const keyLight = new THREE.DirectionalLight(0xfff4e6, 2.15)
+    keyLight.position.set(3.8, 5.4, 5.8)
+    keyLight.castShadow = true
+    scene.add(keyLight)
+
+    const rimLight = new THREE.DirectionalLight(0xffffff, 1.1)
+    rimLight.position.set(-4.2, 2.8, -4.6)
+    scene.add(rimLight)
+
+    const fillLight = new THREE.DirectionalLight(0xff9a4f, 0.48)
+    fillLight.position.set(-2.4, 1.6, 3.2)
+    scene.add(fillLight)
+
+    let frameId = 0
+    let disposed = false
+    let pointerX = 0
+    let pointerY = 0
+    const pivots: THREE.Group[] = []
+    const ownedMaterials: THREE.Material[] = []
+    const modelSlots = [
+      { x: -2.92, y: 2.12, z: -0.08 },
+      { x: -0.98, y: 2.24, z: -0.12 },
+      { x: 0.98, y: 2.24, z: -0.12 },
+      { x: 2.92, y: 2.12, z: -0.08 },
+      { x: -2.92, y: -2.12, z: -0.08 },
+      { x: -0.98, y: -2.24, z: -0.12 },
+      { x: 0.98, y: -2.24, z: -0.12 },
+      { x: 2.92, y: -2.12, z: -0.08 },
+      { x: -3.72, y: 0.74, z: -0.02 },
+      { x: -3.72, y: -0.74, z: -0.02 },
+      { x: 3.72, y: 0.74, z: -0.02 },
+      { x: 3.72, y: -0.74, z: -0.02 },
+    ]
+
+    const resize = () => {
+      const { width, height } = container.getBoundingClientRect()
+      const nextWidth = Math.max(1, Math.floor(width))
+      const nextHeight = Math.max(1, Math.floor(height))
+      const aspect = nextWidth / nextHeight
+      const frustumHeight = 6.12
+      const frustumWidth = frustumHeight * aspect
+      camera.left = -frustumWidth / 2
+      camera.right = frustumWidth / 2
+      camera.top = frustumHeight / 2
+      camera.bottom = -frustumHeight / 2
+      camera.updateProjectionMatrix()
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+      renderer.setSize(nextWidth, nextHeight, false)
+    }
+
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(container)
+    resize()
+
+    const handlePointerMove = (event: PointerEvent) => {
+      const rect = container.getBoundingClientRect()
+      pointerX = THREE.MathUtils.clamp(((event.clientX - rect.left) / rect.width) * 2 - 1, -1, 1)
+      pointerY = THREE.MathUtils.clamp(-(((event.clientY - rect.top) / rect.height) * 2 - 1), -1, 1)
+    }
+
+    const handlePointerLeave = () => {
+      pointerX = 0
+      pointerY = 0
+    }
+
+    container.addEventListener('pointermove', handlePointerMove)
+    container.addEventListener('pointerleave', handlePointerLeave)
+
+    const loader = new GLTFLoader()
+    Promise.all(models.map((model) => loader.loadAsync(model).catch(() => null))).then((loadedModels) => {
+      if (disposed) return
+
+      const scenes = loadedModels
+        .map((gltf) => gltf?.scene)
+        .filter((sceneObject): sceneObject is THREE.Group => Boolean(sceneObject))
+      scenes.forEach((sceneObject, index) => {
+        const object = cloneSkeleton(sceneObject) as THREE.Object3D
+        object.traverse((child) => {
+          if (!('isMesh' in child)) return
+          const mesh = child as THREE.Mesh
+          mesh.castShadow = true
+          mesh.receiveShadow = true
+          mesh.frustumCulled = false
+          const sourceMaterials = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
+          const clonedMaterials = sourceMaterials.map((material) => material.clone())
+          mesh.material = Array.isArray(mesh.material) ? clonedMaterials : clonedMaterials[0]
+          ownedMaterials.push(...clonedMaterials)
+          const materials = clonedMaterials
+          materials.forEach((material) => {
+            if (material instanceof THREE.MeshStandardMaterial || material instanceof THREE.MeshPhysicalMaterial) {
+              material.roughness = Math.min(material.roughness ?? 0.28, 0.22)
+              material.metalness = Math.max(material.metalness ?? 0.4, 0.72)
+              material.envMapIntensity = 1.7
+              if (material instanceof THREE.MeshPhysicalMaterial) {
+                material.clearcoat = Math.max(material.clearcoat ?? 0, 0.55)
+                material.clearcoatRoughness = Math.min(material.clearcoatRoughness ?? 0.18, 0.18)
+              }
+            }
+            material.needsUpdate = true
+          })
+        })
+
+        const box = new THREE.Box3().setFromObject(object)
+        const size = box.getSize(new THREE.Vector3())
+        const center = box.getCenter(new THREE.Vector3())
+        const maxSide = Math.max(size.x, size.y, size.z, 0.001)
+        const scale = 0.76 / maxSide
+        object.scale.setScalar(scale)
+        object.position.set(-center.x * scale, -center.y * scale, -center.z * scale)
+
+        const slot = modelSlots[index % modelSlots.length]
+        const pivot = new THREE.Group()
+        pivot.position.set(slot.x, slot.y, slot.z)
+        pivot.rotation.y = 0
+        pivot.rotation.z = 0
+        pivot.userData.baseY = pivot.rotation.y
+        pivot.userData.baseX = pivot.position.x
+        pivot.userData.baseVertical = pivot.position.y
+        pivot.add(object)
+        group.add(pivot)
+        pivots.push(pivot)
+      })
+
+      container.dataset.modelLoaded = String(scenes.length)
+    })
+
+    const animate = () => {
+      frameId = window.requestAnimationFrame(animate)
+      const elapsed = performance.now() * 0.001
+      group.rotation.y += (pointerX * 0.018 - group.rotation.y) * 0.05
+      group.rotation.x += (-pointerY * 0.012 - group.rotation.x) * 0.05
+      pivots.forEach((pivot, index) => {
+        pivot.rotation.y = 0
+        pivot.rotation.x = 0
+        pivot.position.y += ((pivot.userData.baseVertical ?? 0) + Math.sin(elapsed * 0.9 + index) * 0.035 - pivot.position.y) * 0.06
+      })
+      renderer.render(scene, camera)
+    }
+
+    animate()
+
+    return () => {
+      disposed = true
+      window.cancelAnimationFrame(frameId)
+      container.removeEventListener('pointermove', handlePointerMove)
+      container.removeEventListener('pointerleave', handlePointerLeave)
+      resizeObserver.disconnect()
+      environmentMap.dispose()
+      pmremGenerator.dispose()
+      ownedMaterials.forEach((material) => material.dispose())
+      renderer.dispose()
+      renderer.domElement.remove()
+    }
+  }, [modelKey, models])
+
+  return (
+    <div
+      aria-label="3D 徽章模型预览"
+      style={{
+        position: 'relative',
+        width: 'min(94vw, 1320px)',
+        height: 'min(82vh, 780px)',
+        cursor: 'default',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <div
+        ref={containerRef}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 1,
+          pointerEvents: 'auto',
+          background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.14), rgba(255,255,255,0) 58%)',
+        }}
+      />
+      <img
+        src={image}
+        alt={title}
+        draggable={false}
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          maxWidth: '62%',
+          maxHeight: '58%',
+          width: 'auto',
+          height: 'auto',
+          objectFit: 'contain',
+          display: 'block',
+          borderRadius: 18,
+          boxShadow: '0 34px 80px rgba(0,0,0,0.38), 0 0 0 1px rgba(255,255,255,0.12)',
+        }}
+      />
+    </div>
+  )
+}
+
 export default function App() {
   const [page, setPage] = useState<Page>('home')
   const [pageMotion, setPageMotion] = useState<PageMotion>('none')
   const [activeProject, setActiveProject] = useState(0)
   const [hoveredShowcaseIndex, setHoveredShowcaseIndex] = useState<number | null>(null)
+  const [expandedContributionImage, setExpandedContributionImage] = useState<ProjectContribution | null>(null)
   const [projectStoryProgress, setProjectStoryProgress] = useState(0)
   const [projectStripOverflowOpen, setProjectStripOverflowOpen] = useState(false)
   const [activeSkill, setActiveSkill] = useState(0)
@@ -2716,6 +3169,17 @@ export default function App() {
   useEffect(() => {
     skillAppsExpandedRef.current = skillAppsExpanded
   }, [skillAppsExpanded])
+
+  useEffect(() => {
+    if (!expandedContributionImage) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setExpandedContributionImage(null)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [expandedContributionImage])
 
   useEffect(() => {
     if (page !== 'skills') {
@@ -2806,7 +3270,9 @@ export default function App() {
   }
 
   const moveProjectStory = (delta: number) => {
-    setProjectStoryProgress((current) => Math.max(0, Math.min(2, current + delta)))
+    const contributionCount = projects[activeProject].contributionDetails?.length ?? 0
+    const maxProgress = contributionCount > 0 ? 2 + 0.34 + contributionCount * 1.08 + 0.78 : 2
+    setProjectStoryProgress((current) => Math.max(0, Math.min(maxProgress, current + delta)))
   }
 
   const resetSkillWallTrackAfterWrap = (index: number) => {
@@ -2978,8 +3444,20 @@ export default function App() {
   const projectWorkProgress = isProjectStoryActive ? Math.max(0, projectStoryProgress - 1) : 0
   const projectDetailOpacity = isProjectStoryActive ? Math.max(0, 1 - projectIntroProgress * 1.28) : 1
   const projectWorkPanelProgress = isProjectStoryActive ? Math.max(0, Math.min(1, (projectStoryProgress - 0.62) / 1.38)) : 0
-  const selectedProjectExitProgress = isProjectStoryActive ? Math.max(0, Math.min(1, (projectWorkProgress - 0.82) / 1.18)) : 0
+  const selectedProjectExitProgress = isProjectStoryActive ? Math.max(0, Math.min(1, (Math.min(projectWorkProgress, 1) - 0.82) / 1.18)) : 0
   const activeProjectWebsiteLabel = projects[activeProject].website?.replace(/^https?:\/\//, '').replace(/\/$/, '') ?? ''
+  const activeProjectDownloadLabel = projects[activeProject].download ? 'App Store' : ''
+  const activeProjectContributions = (projects[activeProject].contributionDetails ?? []) as ProjectContribution[]
+  const activeProjectData = projects[activeProject]
+  const activeProjectContributionPoints =
+    'contributionPoints' in activeProjectData && activeProjectData.contributionPoints
+      ? activeProjectData.contributionPoints
+      : activeProjectData.highlights
+  const projectContributionProgress = isProjectStoryActive ? Math.max(0, projectStoryProgress - 2) : 0
+  const projectContributionHold = activeProjectContributions.length > 0 ? 0.34 : 0
+  const projectContributionSlideProgress = Math.max(0, projectContributionProgress - projectContributionHold)
+  const projectContributionRailProgress = Math.max(0, Math.min(1, projectContributionSlideProgress / 0.42))
+  const projectContributionSlideOffset = projectContributionSlideProgress * 860
   const selectedAppSlots =
     selectedSkill.apps.length === 2
       ? [
@@ -3318,8 +3796,9 @@ export default function App() {
                   target="_blank"
                   rel="noreferrer"
                   style={{
-                    display: 'inline-flex',
+                    display: 'flex',
                     alignItems: 'center',
+                    width: 'fit-content',
                     marginTop: 18,
                     color: 'rgba(255,255,255,0.88)',
                     fontSize: 14,
@@ -3329,6 +3808,26 @@ export default function App() {
                   }}
                 >
                   网站：{activeProjectWebsiteLabel}
+                </a>
+              )}
+              {projects[activeProject].download && (
+                <a
+                  href={projects[activeProject].download}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: 'fit-content',
+                    marginTop: projects[activeProject].website ? 8 : 18,
+                    color: 'rgba(255,255,255,0.88)',
+                    fontSize: 14,
+                    fontWeight: 800,
+                    textDecoration: 'none',
+                    textShadow: '0 2px 8px rgba(92,37,6,0.18)',
+                  }}
+                >
+                  下载：{activeProjectDownloadLabel}
                 </a>
               )}
             </div>
@@ -3523,10 +4022,11 @@ export default function App() {
                 ) : (
                   projects[activeProject].showcaseImages.map((image, imageIndex) => {
                   const images = projects[activeProject].showcaseImages
+                  const isPhoneStack = projects[activeProject].showcaseLayout === 'phoneStack'
                   const slot = showcaseStackSlots[imageIndex] ?? showcaseStackSlots[showcaseStackSlots.length - 1]
                   const spreadRatio = images.length > 1 ? imageIndex / (images.length - 1) : 0.5
-                  const spreadLeft = 11 + spreadRatio * 78
-                  const spreadDepth = -58 + spreadRatio * 116
+                  const spreadLeft = isPhoneStack ? 24 + imageIndex * 18 : 11 + spreadRatio * 78
+                  const spreadDepth = isPhoneStack ? -64 + imageIndex * 42 : -58 + spreadRatio * 116
                   const focused = hoveredShowcaseIndex === imageIndex
                   const muted = hoveredShowcaseIndex !== null && !focused
 
@@ -3542,7 +4042,7 @@ export default function App() {
                         left: `${spreadLeft}%`,
                         top: `${slot.top}%`,
                         width: 'auto',
-                        height: focused ? '78%' : '68%',
+                        height: focused ? (isPhoneStack ? '80%' : '78%') : isPhoneStack ? '74%' : '68%',
                         objectFit: 'contain',
                         objectPosition: 'center',
                         borderRadius: focused ? 24 : 20,
@@ -3556,7 +4056,7 @@ export default function App() {
                           : '0 13px 28px rgba(77,29,4,0.14)',
                         transform: focused
                           ? 'translate3d(-50%, -50%, 112px) rotateY(0deg) rotateZ(0deg) scale(1.03)'
-                          : `translate3d(-50%, -50%, ${spreadDepth}px) rotateY(0deg) rotateZ(0deg) scale(${muted ? 0.985 : 1})`,
+                          : `translate3d(-50%, -50%, ${spreadDepth}px) rotateY(${isPhoneStack ? '-5deg' : '0deg'}) rotateZ(0deg) scale(${muted ? 0.985 : 1})`,
                         transformStyle: 'preserve-3d',
                         transition:
                           'transform 320ms cubic-bezier(0.2, 0.9, 0.22, 1), width 320ms ease, height 320ms ease, opacity 220ms ease, box-shadow 320ms ease, border-radius 320ms ease',
@@ -3570,13 +4070,13 @@ export default function App() {
 
             {isProjectStoryActive && (
               <div
-                aria-label={`${projects[activeProject].title} 我参与做的事情`}
+                aria-label={`${projects[activeProject].title} 项目贡献`}
                 style={{
                   position: 'absolute',
                   right: 'clamp(58px, 8vw, 118px)',
                   top: '50%',
                   width: 'min(42vw, 560px)',
-                  transform: `translate3d(${(1 - projectWorkPanelProgress) * 360}px, -50%, 0)`,
+                  transform: `translate3d(${(1 - projectWorkPanelProgress) * 360 - projectContributionSlideOffset}px, -50%, 0)`,
                   opacity: projectWorkPanelProgress,
                   zIndex: 3,
                   pointerEvents: projectWorkPanelProgress > 0.72 ? 'auto' : 'none',
@@ -3592,7 +4092,7 @@ export default function App() {
                     marginBottom: 14,
                   }}
                 >
-                  {projects[activeProject].title} / WHAT I DID
+                  {projects[activeProject].title} / PROJECT CONTRIBUTION
                 </div>
                 <h3
                   style={{
@@ -3600,12 +4100,12 @@ export default function App() {
                     color: 'white',
                     fontSize: 'clamp(38px, 5.2vw, 68px)',
                     lineHeight: 1.02,
-                    margin: '0 0 24px',
+                    margin: '0 0 40px',
                     fontWeight: 700,
                     textShadow: '0 10px 24px rgba(92,37,6,0.16)',
                   }}
                 >
-                  我参与做的事情
+                  项目贡献
                 </h3>
                 <div
                   style={{
@@ -3613,7 +4113,7 @@ export default function App() {
                     gap: 14,
                   }}
                 >
-                  {['产品方向与信息架构', 'AI 识别与展品卡体验', '视觉展示与发布落地'].map((item, itemIndex) => (
+                  {activeProjectContributionPoints.map((item, itemIndex) => (
                     <div
                       key={item}
                       style={{
@@ -3655,6 +4155,117 @@ export default function App() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {isProjectStoryActive && activeProjectContributions.length > 0 && (
+              <div
+                aria-label={`${projects[activeProject].title} 详细项目贡献`}
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: '50%',
+                  height: 610,
+                  zIndex: 6,
+                  opacity: projectContributionRailProgress,
+                  transform: `translateY(calc(-50% + ${(1 - projectContributionRailProgress) * 22}px))`,
+                  transition: 'opacity 180ms ease-out, transform 180ms ease-out',
+                  pointerEvents: projectContributionRailProgress > 0.2 ? 'auto' : 'none',
+                  overflow: 'visible',
+                }}
+              >
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: '100%',
+                    top: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 230,
+                    transform: `translate3d(${-projectContributionSlideOffset}px, -50%, 0)`,
+                    transition: 'transform 180ms ease-out',
+                    willChange: 'transform',
+                  }}
+                >
+                  {activeProjectContributions.map((item, itemIndex) => {
+                    const itemProgress = Math.max(0, Math.min(1, (projectContributionSlideProgress - itemIndex * 0.96) / 0.72))
+
+                    return (
+                      <div
+                        key={item.title}
+                        style={{
+                          width: 650,
+                          flex: '0 0 650px',
+                          minHeight: 560,
+                          opacity: itemProgress,
+                          transform: `translate3d(${(1 - itemProgress) * 110}px, 0, 0) scale(${0.96 + itemProgress * 0.04})`,
+                          transition: 'opacity 180ms ease-out, transform 180ms ease-out',
+                          textAlign: 'center',
+                        }}
+                      >
+                        <button
+                          type="button"
+                          aria-label={`放大查看 ${item.title}`}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            setExpandedContributionImage(item)
+                          }}
+                          style={{
+                            width: '100%',
+                            height: 470,
+                            overflow: 'visible',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: 28,
+                            padding: 0,
+                            border: 'none',
+                            background: 'transparent',
+                            cursor: 'zoom-in',
+                            appearance: 'none',
+                            WebkitAppearance: 'none',
+                          }}
+                        >
+                          <img
+                            src={item.image}
+                            alt=""
+                            draggable={false}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'contain',
+                              display: 'block',
+                            filter: 'drop-shadow(0 24px 40px rgba(77,29,4,0.22))',
+                            }}
+                          />
+                        </button>
+                        <div
+                          style={{
+                            color: 'rgba(255,255,255,0.62)',
+                            fontSize: 12,
+                            fontWeight: 900,
+                            letterSpacing: 2.4,
+                            marginBottom: 8,
+                          }}
+                        >
+                          {String(itemIndex + 1).padStart(2, '0')}
+                        </div>
+                        <div
+                          style={{
+                            color: 'white',
+                            fontSize: 34,
+                            fontWeight: 900,
+                            lineHeight: 1.18,
+                            textShadow: '0 4px 14px rgba(92,37,6,0.14)',
+                          }}
+                        >
+                          {item.title}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}
@@ -3702,17 +4313,18 @@ export default function App() {
                     ? Math.max(0, Math.min(1, (projectIntroProgress - Math.abs(i - activeProject) * 0.09) / 0.46))
                     : 0
                 const selectedTargetX = 236 - i * 152
-                const selectedCardX = isSelectedStoryCard ? projectIntroProgress * selectedTargetX - selectedProjectExitProgress * 116 : 0
+                const selectedCardX = isSelectedStoryCard ? projectIntroProgress * selectedTargetX - selectedProjectExitProgress * 116 - projectContributionSlideOffset : 0
                 const selectedCardY = isSelectedStoryCard ? projectIntroProgress * -292 - selectedProjectExitProgress * 18 : cardFallProgress * (780 + i * 58)
                 const storyScale = isSelectedStoryCard ? 1.08 + projectIntroProgress * 0.34 : null
                 const cardScale = storyScale ?? (isAppIconProject ? (active ? 1.08 : 0.94) : active ? 1.05 : 1)
-                const cardOpacity = isProjectStoryActive && !active
-                    ? Math.max(0, 1 - cardFallProgress * 1.12)
-                    : isAppIconProject
-                      ? active
-                        ? 1
-                        : 0.62
-                      : 1
+                const baseCardOpacity = isProjectStoryActive && !active
+                  ? Math.max(0, 1 - cardFallProgress * 1.12)
+                  : isAppIconProject
+                    ? active
+                      ? 1
+                      : 0.62
+                    : 1
+                const cardOpacity = baseCardOpacity
 
                 return (
                   <div
@@ -4273,6 +4885,62 @@ export default function App() {
           transition: 'opacity 160ms ease',
         }}
       />
+
+      {expandedContributionImage && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`查看 ${expandedContributionImage.title}`}
+          onClick={() => setExpandedContributionImage(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 260,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 'min(6vw, 72px)',
+            background: 'rgba(14,8,4,0.82)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+          }}
+        >
+          <BookDetailCloseButton onClose={() => setExpandedContributionImage(null)} zIndex={261} ariaLabel="关闭项目贡献预览" />
+          <div
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            {expandedContributionImage.models?.length ? (
+              <ContributionModelPreview
+                image={expandedContributionImage.image}
+                models={expandedContributionImage.models}
+                title={expandedContributionImage.title}
+              />
+            ) : (
+              <img
+                src={expandedContributionImage.image}
+                alt=""
+                draggable={false}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  width: 'auto',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  display: 'block',
+                  filter: 'drop-shadow(0 34px 70px rgba(0,0,0,0.36))',
+                }}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
