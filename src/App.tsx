@@ -3420,9 +3420,9 @@ export default function App() {
                 ) : projects[activeProject].showcaseLayout === 'labDuo' ? (
                   projects[activeProject].showcaseImages.map((image, imageIndex) => {
                     const labSlots = [
-                      { left: 56, top: 24, width: 92, rotate: -1.2, z: 104 },
-                      { left: 39, top: 62, width: 62, rotate: -4.2, z: 72 },
-                      { left: 68, top: 68, width: 76, rotate: 3.2, z: -34 },
+                      { left: 56, top: 26, width: 76, rotate: -1.2, z: 104 },
+                      { left: 39, top: 64, width: 50, rotate: -4.2, z: 72 },
+                      { left: 68, top: 68, width: 60, rotate: 3.2, z: -34 },
                     ]
                     const slot = labSlots[imageIndex] ?? labSlots[labSlots.length - 1]
 
@@ -3658,6 +3658,26 @@ export default function App() {
                 </div>
               </div>
             )}
+
+            <div
+              style={{
+                position: 'absolute',
+                left: 60,
+                bottom: 238,
+                zIndex: 4,
+                color: 'rgba(255,255,255,0.68)',
+                fontSize: 13,
+                fontWeight: 800,
+                letterSpacing: 0.6,
+                textShadow: '0 2px 10px rgba(92,37,6,0.16)',
+                opacity: Math.max(0, 1 - projectIntroProgress * 1.7),
+                transform: `translateY(${projectIntroProgress * 12}px)`,
+                transition: 'opacity 180ms ease-out, transform 180ms ease-out',
+                pointerEvents: 'none',
+              }}
+            >
+              滚动鼠标滚轮查看详细
+            </div>
 
             {/* Project poster strip */}
             <div
