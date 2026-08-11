@@ -28,6 +28,11 @@ const wheelBackSwitchThreshold = 10
 const wheelSwitchLockMs = 590
 const wheelResetMs = 240
 
+const getInitialViewport = () => ({
+  width: typeof window === 'undefined' ? 1280 : window.innerWidth,
+  height: typeof window === 'undefined' ? 800 : window.innerHeight,
+})
+
 const hoodieOrange = '#f26a1b'
 const hoodieOrangeDeep = '#d8661a'
 const hoodieOrangeDark = '#ad4c14'
@@ -3095,6 +3100,7 @@ export default function App() {
   const [expandedContributionImage, setExpandedContributionImage] = useState<ProjectContribution | null>(null)
   const [projectStoryProgress, setProjectStoryProgress] = useState(0)
   const [projectStripOverflowOpen, setProjectStripOverflowOpen] = useState(false)
+  const [viewport, setViewport] = useState(getInitialViewport)
   const [activeSkill, setActiveSkill] = useState(0)
   const [activeSkillWall, setActiveSkillWall] = useState(0)
   const [skillWallTrackIndex, setSkillWallTrackIndex] = useState(0)
@@ -3104,6 +3110,7 @@ export default function App() {
   const activeSkillWallRef = useRef(0)
   const skillAppsExpandedRef = useRef(false)
   const skillWallPointerRef = useRef<{ x: number; y: number } | null>(null)
+  const projectTouchRef = useRef<{ x: number; y: number } | null>(null)
   const skillWallNavLockedRef = useRef(false)
   const wheelAccumRef = useRef(0)
   const wheelLockRef = useRef(false)
@@ -3128,6 +3135,19 @@ export default function App() {
   useEffect(() => {
     pageRef.current = page
   }, [page])
+
+  useEffect(() => {
+    const updateViewport = () => setViewport(getInitialViewport())
+
+    updateViewport()
+    window.addEventListener('resize', updateViewport)
+    window.addEventListener('orientationchange', updateViewport)
+
+    return () => {
+      window.removeEventListener('resize', updateViewport)
+      window.removeEventListener('orientationchange', updateViewport)
+    }
+  }, [])
 
   useEffect(() => {
     setProjectStoryProgress(0)
@@ -3457,7 +3477,13 @@ export default function App() {
   const projectContributionHold = activeProjectContributions.length > 0 ? 0.34 : 0
   const projectContributionSlideProgress = Math.max(0, projectContributionProgress - projectContributionHold)
   const projectContributionRailProgress = Math.max(0, Math.min(1, projectContributionSlideProgress / 0.42))
-  const projectContributionSlideOffset = projectContributionSlideProgress * 860
+  const isMobileViewport = viewport.width <= 760
+  const projectContributionGap = isMobileViewport ? Math.max(44, viewport.width * 0.12) : 230
+  const projectContributionItemWidth = isMobileViewport ? Math.min(360, Math.max(270, viewport.width * 0.74)) : 650
+  const projectContributionStride = isMobileViewport ? projectContributionItemWidth + projectContributionGap : 860
+  const projectContributionImageHeight = isMobileViewport ? Math.min(320, Math.max(210, viewport.height * 0.34)) : 470
+  const projectContributionRailHeight = isMobileViewport ? Math.min(470, Math.max(340, viewport.height * 0.58)) : 610
+  const projectContributionSlideOffset = projectContributionSlideProgress * projectContributionStride
   const selectedAppSlots =
     selectedSkill.apps.length === 2
       ? [
@@ -3480,7 +3506,7 @@ export default function App() {
           zIndex: 100,
           display: 'flex',
           alignItems: 'center',
-          padding: '68px 40px 18px',
+          padding: isMobileViewport ? 'calc(env(safe-area-inset-top) + 14px) 16px 10px' : '68px 40px 18px',
         }}
       >
         <div style={{ flex: 1 }} />
@@ -3501,7 +3527,7 @@ export default function App() {
             top: '50%',
           }}
         >
-          <div style={{ display: 'flex', gap: 2 }}>
+          <div style={{ display: 'flex', gap: isMobileViewport ? 0 : 2 }}>
             {(['home', 'videos', 'skills'] as Page[]).map((p, i) => {
               const labels = ['主页', '项目', '关于']
               const active = page === p
@@ -3510,11 +3536,11 @@ export default function App() {
                   key={p}
                   onClick={() => goToPage(p)}
                   style={{
-                    padding: '14px 32px',
+                    padding: isMobileViewport ? '11px 18px' : '14px 32px',
                     borderRadius: 999,
                     border: 'none',
                     cursor: 'pointer',
-                    fontSize: 14,
+                    fontSize: isMobileViewport ? 13 : 14,
                     fontFamily: "'Inter', sans-serif",
                     fontWeight: 700,
                     transition: 'all 0.2s',
@@ -3544,6 +3570,7 @@ export default function App() {
           position: 'absolute',
           inset: 0,
           display: 'flex',
+          flexDirection: isMobileViewport ? 'column' : 'row',
           overflow: 'hidden',
           opacity: page === 'home' ? 1 : 0,
           visibility: page === 'home' ? 'visible' : 'hidden',
@@ -3553,12 +3580,12 @@ export default function App() {
           {/* Left orange panel */}
           <div
             style={{
-              flex: '0 0 56%',
+              flex: isMobileViewport ? '1 1 100%' : '0 0 56%',
               background: `linear-gradient(155deg, #ff8d30 0%, ${hoodieOrange} 44%, ${hoodieOrangeDeep} 74%, ${hoodieOrangeDark} 100%)`,
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'center',
-              padding: '100px clamp(48px, 5vw, 72px) 64px',
+              justifyContent: isMobileViewport ? 'flex-start' : 'center',
+              padding: isMobileViewport ? 'calc(env(safe-area-inset-top) + 98px) 24px 36px' : '100px clamp(48px, 5vw, 72px) 64px',
               position: 'relative',
               minWidth: 0,
             }}
@@ -3581,16 +3608,16 @@ export default function App() {
                 lineHeight={0.95}
                 textAlign="left"
                 style={{
-                  width: 'min(460px, 100%)',
-                  height: 104,
+                    width: isMobileViewport ? 'min(320px, 100%)' : 'min(460px, 100%)',
+                    height: isMobileViewport ? 82 : 104,
                   margin: '0 0 16px',
                   filter: 'drop-shadow(0 2px 20px rgba(0,0,0,0.3))',
                 }}
               />
 
-              <div style={{ width: 48, height: 2, background: 'rgba(255,255,255,0.45)', marginBottom: 22 }} />
+                <div style={{ width: 48, height: 2, background: 'rgba(255,255,255,0.45)', marginBottom: isMobileViewport ? 18 : 22 }} />
 
-              <div style={{ maxWidth: 440, color: 'white' }}>
+              <div style={{ maxWidth: isMobileViewport ? 330 : 440, color: 'white' }}>
                 <div
                   style={{
                     fontSize: 11,
@@ -3618,7 +3645,7 @@ export default function App() {
                       }}
                     >
                       <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, fontWeight: 700 }}>{label}</span>
-                      <span style={{ color: 'rgba(255,255,255,0.92)', fontSize: 15, fontWeight: 800, letterSpacing: 0.2 }}>{value}</span>
+                      <span style={{ color: 'rgba(255,255,255,0.92)', fontSize: isMobileViewport ? 14 : 15, fontWeight: 800, letterSpacing: 0.2 }}>{value}</span>
                     </div>
                   ))}
                 </div>
@@ -3626,7 +3653,7 @@ export default function App() {
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(96px, 1fr))',
+                    gridTemplateColumns: isMobileViewport ? 'repeat(3, minmax(0, 1fr))' : 'repeat(auto-fit, minmax(96px, 1fr))',
                     gap: 12,
                     marginTop: 16,
                     paddingTop: 15,
@@ -3652,6 +3679,7 @@ export default function App() {
           <div
             style={{
               flex: '1 1 44%',
+              display: isMobileViewport ? 'none' : undefined,
               position: 'relative',
               overflow: 'hidden',
               background: '#f3f1ed',
@@ -3704,7 +3732,46 @@ export default function App() {
             event.preventDefault()
             moveProjectStory(wheelDelta * 0.0035)
           }}
-          style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}
+          onTouchStart={(event) => {
+            if (!isMobileViewport) return
+            const target = event.target as HTMLElement | null
+            if (target?.closest('[data-allow-scroll="true"]')) return
+            const touch = event.touches[0]
+            if (!touch) return
+            projectTouchRef.current = { x: touch.clientX, y: touch.clientY }
+          }}
+          onTouchMove={(event) => {
+            if (!isMobileViewport) return
+            const target = event.target as HTMLElement | null
+            if (target?.closest('[data-allow-scroll="true"]')) return
+
+            const start = projectTouchRef.current
+            const touch = event.touches[0]
+            if (!start || !touch) return
+
+            const deltaX = start.x - touch.clientX
+            const deltaY = start.y - touch.clientY
+            const dominantDelta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY
+            if (Math.abs(dominantDelta) < 2) return
+
+            event.preventDefault()
+            moveProjectStory(dominantDelta * 0.006)
+            projectTouchRef.current = { x: touch.clientX, y: touch.clientY }
+          }}
+          onTouchEnd={() => {
+            projectTouchRef.current = null
+          }}
+          onTouchCancel={() => {
+            projectTouchRef.current = null
+          }}
+          style={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            overflow: 'hidden',
+            touchAction: isMobileViewport ? 'none' : undefined,
+          }}
         >
           {/* Background */}
           <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
@@ -3721,13 +3788,15 @@ export default function App() {
           </div>
 
           {/* Content */}
-          <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '100px 0 0' }}>
+          <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: isMobileViewport ? 'calc(env(safe-area-inset-top) + 72px) 0 0' : '100px 0 0' }}>
             {/* Project detail */}
             <div
               style={{
-                padding: '0 60px',
-                maxWidth: 570,
-                transform: `translate3d(${-projectIntroProgress * 40}px, ${28 - projectIntroProgress * 18}px, 0)`,
+                padding: isMobileViewport ? '0 22px' : '0 60px',
+                maxWidth: isMobileViewport ? '100%' : 570,
+                transform: isMobileViewport
+                  ? `translate3d(${-projectIntroProgress * 24}px, ${8 - projectIntroProgress * 12}px, 0)`
+                  : `translate3d(${-projectIntroProgress * 40}px, ${28 - projectIntroProgress * 18}px, 0)`,
                 opacity: projectDetailOpacity,
                 pointerEvents: projectDetailOpacity > 0.12 ? 'auto' : 'none',
                 position: 'relative',
@@ -3735,25 +3804,31 @@ export default function App() {
                 transition: 'opacity 180ms ease-out, transform 180ms ease-out',
               }}
             >
-              <div style={{ fontSize: 11.5, letterSpacing: 4, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 8 }}>
+              <div style={{ fontSize: isMobileViewport ? 10 : 11.5, letterSpacing: isMobileViewport ? 3 : 4, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: isMobileViewport ? 6 : 8 }}>
                 {projects[activeProject].label}
               </div>
-              <div style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.4)', marginBottom: 18 }}>
+              <div style={{ fontSize: isMobileViewport ? 12 : 13.5, color: 'rgba(255,255,255,0.4)', marginBottom: isMobileViewport ? 12 : 18 }}>
                 {projects[activeProject].year}
               </div>
               <h2
                 style={{
                   fontFamily: "'Oswald', sans-serif",
-                  fontSize: projects[activeProject].stripTitle ? 'clamp(34px, 4.35vw, 54px)' : 'clamp(32px, 5vw, 60px)',
+                  fontSize: isMobileViewport
+                    ? projects[activeProject].stripTitle
+                      ? 'clamp(30px, 9vw, 42px)'
+                      : 'clamp(32px, 10.5vw, 46px)'
+                    : projects[activeProject].stripTitle
+                      ? 'clamp(34px, 4.35vw, 54px)'
+                      : 'clamp(32px, 5vw, 60px)',
                   fontWeight: 700,
                   color: 'white',
-                  margin: '0 0 24px',
+                  margin: isMobileViewport ? '0 0 14px' : '0 0 24px',
                   lineHeight: 1.1,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 16,
+                  gap: isMobileViewport ? 10 : 16,
                   flexWrap: 'wrap',
-                  whiteSpace: projects[activeProject].stripTitle ? 'nowrap' : undefined,
+                  whiteSpace: !isMobileViewport && projects[activeProject].stripTitle ? 'nowrap' : undefined,
                 }}
               >
                 <span>{projects[activeProject].title}</span>
@@ -3761,15 +3836,15 @@ export default function App() {
                   <span
                     aria-hidden="true"
                     style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 13,
+                      width: isMobileViewport ? 38 : 48,
+                      height: isMobileViewport ? 38 : 48,
+                      borderRadius: isMobileViewport ? 10 : 13,
                       overflow: 'hidden',
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flex: '0 0 auto',
-                      transform: 'translateY(5px)',
+                      transform: isMobileViewport ? 'translateY(3px)' : 'translateY(5px)',
                     }}
                   >
                     <img
@@ -3786,7 +3861,7 @@ export default function App() {
                   </span>
                 )}
               </h2>
-              <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: 15.5, lineHeight: 1.85, margin: '0 0 22px' }}>
+              <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: isMobileViewport ? 12.6 : 15.5, lineHeight: isMobileViewport ? 1.72 : 1.85, margin: isMobileViewport ? '0 0 14px' : '0 0 22px', maxWidth: isMobileViewport ? 350 : undefined }}>
                 {projects[activeProject].desc}
               </p>
               <div style={{ width: 40, height: 3, background: hoodieOrange }} />
@@ -3799,9 +3874,9 @@ export default function App() {
                     display: 'flex',
                     alignItems: 'center',
                     width: 'fit-content',
-                    marginTop: 18,
+                    marginTop: isMobileViewport ? 12 : 18,
                     color: 'rgba(255,255,255,0.88)',
-                    fontSize: 14,
+                    fontSize: isMobileViewport ? 12.5 : 14,
                     fontWeight: 800,
                     textDecoration: 'none',
                     textShadow: '0 2px 8px rgba(92,37,6,0.18)',
@@ -3819,9 +3894,9 @@ export default function App() {
                     display: 'flex',
                     alignItems: 'center',
                     width: 'fit-content',
-                    marginTop: projects[activeProject].website ? 8 : 18,
+                    marginTop: projects[activeProject].website ? (isMobileViewport ? 6 : 8) : isMobileViewport ? 12 : 18,
                     color: 'rgba(255,255,255,0.88)',
-                    fontSize: 14,
+                    fontSize: isMobileViewport ? 12.5 : 14,
                     fontWeight: 800,
                     textDecoration: 'none',
                     textShadow: '0 2px 8px rgba(92,37,6,0.18)',
@@ -3837,15 +3912,17 @@ export default function App() {
                 aria-hidden="true"
                 style={{
                   position: 'absolute',
-                  right: 'clamp(72px, 8vw, 128px)',
-                  top: 136,
-                  width: 'min(46vw, 680px)',
-                  height: 'min(54vh, 500px)',
+                  right: isMobileViewport ? '50%' : 'clamp(72px, 8vw, 128px)',
+                  top: isMobileViewport ? '46%' : 136,
+                  width: isMobileViewport ? 'min(94vw, 430px)' : 'min(46vw, 680px)',
+                  height: isMobileViewport ? 'min(40vh, 350px)' : 'min(54vh, 500px)',
                   zIndex: 1,
                   perspective: 1040,
                   transformStyle: 'preserve-3d',
                   opacity: Math.max(0, 1 - projectIntroProgress * 1.18),
-                  transform: `translate3d(${projectIntroProgress * 70}px, ${projectIntroProgress * 12}px, 0)`,
+                  transform: isMobileViewport
+                    ? `translate3d(50%, ${projectIntroProgress * 18}px, 0)`
+                    : `translate3d(${projectIntroProgress * 70}px, ${projectIntroProgress * 12}px, 0)`,
                   transition: 'opacity 180ms ease-out, transform 180ms ease-out',
                   pointerEvents: projectIntroProgress < 0.82 ? 'auto' : 'none',
                 }}
@@ -4025,8 +4102,16 @@ export default function App() {
                   const isPhoneStack = projects[activeProject].showcaseLayout === 'phoneStack'
                   const slot = showcaseStackSlots[imageIndex] ?? showcaseStackSlots[showcaseStackSlots.length - 1]
                   const spreadRatio = images.length > 1 ? imageIndex / (images.length - 1) : 0.5
-                  const spreadLeft = isPhoneStack ? 24 + imageIndex * 18 : 11 + spreadRatio * 78
-                  const spreadDepth = isPhoneStack ? -64 + imageIndex * 42 : -58 + spreadRatio * 116
+                  const spreadLeft = isPhoneStack
+                    ? isMobileViewport
+                      ? 16 + imageIndex * (images.length > 4 ? 13 : 17)
+                      : 24 + imageIndex * 18
+                    : 11 + spreadRatio * 78
+                  const spreadDepth = isPhoneStack
+                    ? isMobileViewport
+                      ? -54 + imageIndex * 32
+                      : -64 + imageIndex * 42
+                    : -58 + spreadRatio * 116
                   const focused = hoveredShowcaseIndex === imageIndex
                   const muted = hoveredShowcaseIndex !== null && !focused
 
@@ -4042,7 +4127,7 @@ export default function App() {
                         left: `${spreadLeft}%`,
                         top: `${slot.top}%`,
                         width: 'auto',
-                        height: focused ? (isPhoneStack ? '80%' : '78%') : isPhoneStack ? '74%' : '68%',
+                        height: focused ? (isPhoneStack ? (isMobileViewport ? '76%' : '80%') : '78%') : isPhoneStack ? (isMobileViewport ? '70%' : '74%') : '68%',
                         objectFit: 'contain',
                         objectPosition: 'center',
                         borderRadius: focused ? 24 : 20,
@@ -4073,10 +4158,12 @@ export default function App() {
                 aria-label={`${projects[activeProject].title} 项目贡献`}
                 style={{
                   position: 'absolute',
-                  right: 'clamp(58px, 8vw, 118px)',
-                  top: '50%',
-                  width: 'min(42vw, 560px)',
-                  transform: `translate3d(${(1 - projectWorkPanelProgress) * 360 - projectContributionSlideOffset}px, -50%, 0)`,
+                  right: isMobileViewport ? 22 : 'clamp(58px, 8vw, 118px)',
+                  top: isMobileViewport ? '48%' : '50%',
+                  width: isMobileViewport ? 'min(58vw, 260px)' : 'min(42vw, 560px)',
+                  transform: isMobileViewport
+                    ? `translate3d(${(1 - projectWorkPanelProgress) * 220 - projectContributionSlideOffset}px, -50%, 0)`
+                    : `translate3d(${(1 - projectWorkPanelProgress) * 360 - projectContributionSlideOffset}px, -50%, 0)`,
                   opacity: projectWorkPanelProgress,
                   zIndex: 3,
                   pointerEvents: projectWorkPanelProgress > 0.72 ? 'auto' : 'none',
@@ -4085,22 +4172,22 @@ export default function App() {
               >
                 <div
                   style={{
-                    fontSize: 12,
-                    letterSpacing: 4,
+                    fontSize: isMobileViewport ? 10 : 12,
+                    letterSpacing: isMobileViewport ? 3 : 4,
                     color: 'rgba(255,255,255,0.58)',
                     fontWeight: 800,
-                    marginBottom: 14,
+                    marginBottom: isMobileViewport ? 10 : 14,
                   }}
                 >
-                  {projects[activeProject].title} / PROJECT CONTRIBUTION
+                  {isMobileViewport ? 'PROJECT CONTRIBUTION' : `${projects[activeProject].title} / PROJECT CONTRIBUTION`}
                 </div>
                 <h3
                   style={{
                     fontFamily: "'Oswald', sans-serif",
                     color: 'white',
-                    fontSize: 'clamp(38px, 5.2vw, 68px)',
+                    fontSize: isMobileViewport ? 'clamp(34px, 12vw, 54px)' : 'clamp(38px, 5.2vw, 68px)',
                     lineHeight: 1.02,
-                    margin: '0 0 40px',
+                    margin: isMobileViewport ? '0 0 28px' : '0 0 40px',
                     fontWeight: 700,
                     textShadow: '0 10px 24px rgba(92,37,6,0.16)',
                   }}
@@ -4110,7 +4197,7 @@ export default function App() {
                 <div
                   style={{
                     display: 'grid',
-                    gap: 14,
+                    gap: isMobileViewport ? 12 : 14,
                   }}
                 >
                   {activeProjectContributionPoints.map((item, itemIndex) => (
@@ -4118,7 +4205,7 @@ export default function App() {
                       key={item}
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: '42px minmax(0, 1fr)',
+                        gridTemplateColumns: isMobileViewport ? '36px minmax(0, 1fr)' : '42px minmax(0, 1fr)',
                         alignItems: 'center',
                         gap: 14,
                         transform: `translateX(${(1 - projectWorkPanelProgress) * (70 + itemIndex * 18)}px)`,
@@ -4128,14 +4215,14 @@ export default function App() {
                     >
                       <div
                         style={{
-                          width: 42,
-                          height: 42,
-                          borderRadius: 14,
+                          width: isMobileViewport ? 36 : 42,
+                          height: isMobileViewport ? 36 : 42,
+                          borderRadius: isMobileViewport ? 12 : 14,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           color: 'white',
-                          fontSize: 13,
+                          fontSize: isMobileViewport ? 12 : 13,
                           fontWeight: 900,
                           background: 'rgba(255,255,255,0.18)',
                           boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.16)',
@@ -4146,7 +4233,7 @@ export default function App() {
                       <div
                         style={{
                           color: 'rgba(255,255,255,0.88)',
-                          fontSize: 17,
+                          fontSize: isMobileViewport ? 14 : 17,
                           fontWeight: 850,
                           lineHeight: 1.35,
                         }}
@@ -4166,8 +4253,8 @@ export default function App() {
                   position: 'absolute',
                   left: 0,
                   right: 0,
-                  top: '50%',
-                  height: 610,
+                  top: isMobileViewport ? '54%' : '50%',
+                  height: projectContributionRailHeight,
                   zIndex: 6,
                   opacity: projectContributionRailProgress,
                   transform: `translateY(calc(-50% + ${(1 - projectContributionRailProgress) * 22}px))`,
@@ -4183,7 +4270,7 @@ export default function App() {
                     top: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 230,
+                    gap: projectContributionGap,
                     transform: `translate3d(${-projectContributionSlideOffset}px, -50%, 0)`,
                     transition: 'transform 180ms ease-out',
                     willChange: 'transform',
@@ -4196,9 +4283,9 @@ export default function App() {
                       <div
                         key={item.title}
                         style={{
-                          width: 650,
-                          flex: '0 0 650px',
-                          minHeight: 560,
+                          width: projectContributionItemWidth,
+                          flex: `0 0 ${projectContributionItemWidth}px`,
+                          minHeight: isMobileViewport ? projectContributionRailHeight - 16 : 560,
                           opacity: itemProgress,
                           transform: `translate3d(${(1 - itemProgress) * 110}px, 0, 0) scale(${0.96 + itemProgress * 0.04})`,
                           transition: 'opacity 180ms ease-out, transform 180ms ease-out',
@@ -4214,12 +4301,12 @@ export default function App() {
                           }}
                           style={{
                             width: '100%',
-                            height: 470,
+                            height: projectContributionImageHeight,
                             overflow: 'visible',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            marginBottom: 28,
+                            marginBottom: isMobileViewport ? 18 : 28,
                             padding: 0,
                             border: 'none',
                             background: 'transparent',
@@ -4244,7 +4331,7 @@ export default function App() {
                         <div
                           style={{
                             color: 'rgba(255,255,255,0.62)',
-                            fontSize: 12,
+                            fontSize: isMobileViewport ? 10.5 : 12,
                             fontWeight: 900,
                             letterSpacing: 2.4,
                             marginBottom: 8,
@@ -4255,7 +4342,7 @@ export default function App() {
                         <div
                           style={{
                             color: 'white',
-                            fontSize: 34,
+                            fontSize: isMobileViewport ? 24 : 34,
                             fontWeight: 900,
                             lineHeight: 1.18,
                             textShadow: '0 4px 14px rgba(92,37,6,0.14)',
@@ -4273,11 +4360,11 @@ export default function App() {
             <div
               style={{
                 position: 'absolute',
-                left: 60,
-                bottom: 238,
+                left: isMobileViewport ? 22 : 60,
+                bottom: isMobileViewport ? 'calc(env(safe-area-inset-bottom) + 148px)' : 238,
                 zIndex: 4,
                 color: 'rgba(255,255,255,0.68)',
-                fontSize: 13,
+                fontSize: isMobileViewport ? 12 : 13,
                 fontWeight: 800,
                 letterSpacing: 0.6,
                 textShadow: '0 2px 10px rgba(92,37,6,0.16)',
@@ -4287,7 +4374,7 @@ export default function App() {
                 pointerEvents: 'none',
               }}
             >
-              滚动鼠标滚轮查看详细
+              {isMobileViewport ? '滑动查看详细' : '滚动鼠标滚轮查看详细'}
             </div>
 
             {/* Project poster strip */}
@@ -4298,8 +4385,8 @@ export default function App() {
                 overflow: projectStoryProgress > 0 || projectStripOverflowOpen ? 'visible' : undefined,
                 overflowX: projectStoryProgress > 0 || projectStripOverflowOpen ? 'visible' : 'auto',
                 display: 'flex',
-                gap: 12,
-                padding: '24px 60px 18px',
+                gap: isMobileViewport ? 10 : 12,
+                padding: isMobileViewport ? '14px 16px calc(env(safe-area-inset-bottom) + 18px)' : '24px 60px 18px',
                 scrollbarWidth: 'none',
               }}
               className="scrollbar-hide"
@@ -4312,10 +4399,13 @@ export default function App() {
                   isProjectStoryActive && !active
                     ? Math.max(0, Math.min(1, (projectIntroProgress - Math.abs(i - activeProject) * 0.09) / 0.46))
                     : 0
-                const selectedTargetX = 236 - i * 152
-                const selectedCardX = isSelectedStoryCard ? projectIntroProgress * selectedTargetX - selectedProjectExitProgress * 116 - projectContributionSlideOffset : 0
-                const selectedCardY = isSelectedStoryCard ? projectIntroProgress * -292 - selectedProjectExitProgress * 18 : cardFallProgress * (780 + i * 58)
-                const storyScale = isSelectedStoryCard ? 1.08 + projectIntroProgress * 0.34 : null
+                const selectedTargetX = isMobileViewport ? Math.max(0, viewport.width * 0.24 - i * 96) : 236 - i * 152
+                const selectedExitOffset = isMobileViewport ? 74 : 116
+                const selectedCardX = isSelectedStoryCard ? projectIntroProgress * selectedTargetX - selectedProjectExitProgress * selectedExitOffset - projectContributionSlideOffset : 0
+                const selectedCardY = isSelectedStoryCard
+                  ? projectIntroProgress * (isMobileViewport ? -188 : -292) - selectedProjectExitProgress * (isMobileViewport ? 10 : 18)
+                  : cardFallProgress * ((isMobileViewport ? viewport.height + 220 : 780) + i * (isMobileViewport ? 72 : 58))
+                const storyScale = isSelectedStoryCard ? (isMobileViewport ? 1.02 + projectIntroProgress * 0.18 : 1.08 + projectIntroProgress * 0.34) : null
                 const cardScale = storyScale ?? (isAppIconProject ? (active ? 1.08 : 0.94) : active ? 1.05 : 1)
                 const baseCardOpacity = isProjectStoryActive && !active
                   ? Math.max(0, 1 - cardFallProgress * 1.12)
@@ -4331,8 +4421,8 @@ export default function App() {
                     key={project.id}
                     onClick={() => setActiveProject(i)}
                     style={{
-                      flex: '0 0 140px',
-                      height: 200,
+                      flex: isMobileViewport ? '0 0 88px' : '0 0 140px',
+                      height: isMobileViewport ? 128 : 200,
                       borderRadius: 12,
                       overflow: isAppIconProject ? 'visible' : 'hidden',
                       cursor: 'pointer',
@@ -4352,10 +4442,10 @@ export default function App() {
                         style={{
                           position: 'absolute',
                           left: '50%',
-                          top: 66,
-                          width: 82,
-                          height: 82,
-                          borderRadius: 22,
+                          top: isMobileViewport ? 44 : 66,
+                          width: isMobileViewport ? 58 : 82,
+                          height: isMobileViewport ? 58 : 82,
+                          borderRadius: isMobileViewport ? 16 : 22,
                           overflow: 'hidden',
                           transform: `translate(-50%, ${active ? '-60%' : '-50%'})`,
                           transition: 'transform 260ms cubic-bezier(0.2, 0.9, 0.22, 1), filter 260ms ease',
@@ -4408,10 +4498,10 @@ export default function App() {
                           position: isAppIconProject ? 'absolute' : undefined,
                           left: isAppIconProject ? 0 : undefined,
                           right: isAppIconProject ? 0 : undefined,
-                          top: isAppIconProject ? 124 : undefined,
+                          top: isAppIconProject ? (isMobileViewport ? 87 : 124) : undefined,
                         }}
                       >
-                        <div style={{ fontSize: active ? 15 : 13, fontWeight: 800, textShadow: active ? '0 3px 10px rgba(50,18,4,0.34)' : '0 2px 6px rgba(50,18,4,0.2)' }}>
+                        <div style={{ fontSize: isMobileViewport ? (active ? 12.5 : 11.5) : active ? 15 : 13, fontWeight: 800, textShadow: active ? '0 3px 10px rgba(50,18,4,0.34)' : '0 2px 6px rgba(50,18,4,0.2)' }}>
                           {project.stripTitle ?? project.title}
                         </div>
                       </div>
@@ -4456,15 +4546,15 @@ export default function App() {
               display: 'flex',
               alignItems: 'center',
 	              justifyContent: 'center',
-	              padding: '96px clamp(40px, 6vw, 86px) 48px',
+	              padding: isMobileViewport ? 'calc(env(safe-area-inset-top) + 72px) 14px calc(env(safe-area-inset-bottom) + 52px)' : '96px clamp(40px, 6vw, 86px) 48px',
 	            }}
 	          >
 	            <div
 	              style={{
 	                position: 'absolute',
 	                left: '50%',
-	                top: 'calc(50% - max(215px, min(250px, calc((100vh - 160px) / 2))) - 48px)',
-	                width: 'min(1088px, calc(100vw - 80px))',
+	                top: isMobileViewport ? 'calc(env(safe-area-inset-top) + 76px)' : 'calc(50% - max(215px, min(250px, calc((100vh - 160px) / 2))) - 48px)',
+	                width: isMobileViewport ? 'calc(100vw - 28px)' : 'min(1088px, calc(100vw - 80px))',
 	                transform: 'translateX(-50%)',
 	                zIndex: 7,
 	                display: 'flex',
@@ -4485,7 +4575,7 @@ export default function App() {
 	                <span
 	                  style={{
 	                    fontFamily: "'Oswald', sans-serif",
-	                    fontSize: 18,
+	                    fontSize: isMobileViewport ? 15 : 18,
 	                    fontWeight: 700,
 	                    lineHeight: 1,
 	                    letterSpacing: 0,
@@ -4495,7 +4585,7 @@ export default function App() {
 	                </span>
 	                <span
 	                  style={{
-	                    fontSize: 15,
+	                    fontSize: isMobileViewport ? 13 : 15,
 	                    fontWeight: 850,
 	                    letterSpacing: 1.2,
 	                  }}
@@ -4506,9 +4596,9 @@ export default function App() {
 	              <div
 	                style={{
 	                  color: 'rgba(255,255,255,0.58)',
-	                  fontSize: 11,
+	                  fontSize: isMobileViewport ? 9.5 : 11,
 	                  fontWeight: 800,
-	                  letterSpacing: 3.2,
+	                  letterSpacing: isMobileViewport ? 2.2 : 3.2,
 	                  textTransform: 'uppercase',
 	                  textShadow: '0 2px 8px rgba(82,31,4,0.18)',
 	                }}
@@ -4523,7 +4613,7 @@ export default function App() {
               saturation={140}
               aberrationIntensity={2}
               elasticity={0}
-              cornerRadius={28}
+              cornerRadius={isMobileViewport ? 24 : 28}
               padding="0"
               mode="prominent"
               style={{
@@ -4539,11 +4629,11 @@ export default function App() {
 	                  skillWallPointerRef.current = null
 	                }}
 	                style={{
-	                  width: 'min(1088px, calc(100vw - 80px))',
-	                  height: 'min(500px, calc(100vh - 160px))',
-	                  minHeight: 430,
+	                  width: isMobileViewport ? 'calc(100vw - 28px)' : 'min(1088px, calc(100vw - 80px))',
+	                  height: isMobileViewport ? 'calc(100dvh - 154px)' : 'min(500px, calc(100vh - 160px))',
+	                  minHeight: isMobileViewport ? 0 : 430,
 	                  position: 'relative',
-	                  borderRadius: 28,
+	                  borderRadius: isMobileViewport ? 24 : 28,
 	                  overflow: 'hidden',
 	                  touchAction: 'pan-y',
 	                }}
@@ -4571,38 +4661,39 @@ export default function App() {
                 style={{
                   position: 'relative',
                   zIndex: 2,
-                  width: '61%',
-                  height: '100%',
-                  padding: '46px 52px 38px',
+                  width: isMobileViewport ? '100%' : '61%',
+                  height: isMobileViewport ? '58%' : '100%',
+                  padding: isMobileViewport ? '24px 22px 18px' : '46px 52px 38px',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between',
+                  justifyContent: isMobileViewport ? 'flex-start' : 'space-between',
+                  gap: isMobileViewport ? 18 : undefined,
                 }}
               >
                 <div>
-                  <div style={{ fontSize: 11, letterSpacing: 4, color: 'rgba(255,255,255,0.62)', textTransform: 'uppercase', marginBottom: 14 }}>
+                  <div style={{ fontSize: isMobileViewport ? 9.5 : 11, letterSpacing: isMobileViewport ? 2.8 : 4, color: 'rgba(255,255,255,0.62)', textTransform: 'uppercase', marginBottom: isMobileViewport ? 10 : 14 }}>
                     SOFTWARE SKILLS / {selectedSkill.label}
                   </div>
                   <h2
                     style={{
                       fontFamily: "'Oswald', sans-serif",
-                      fontSize: 'clamp(42px, 5vw, 62px)',
+                      fontSize: isMobileViewport ? 'clamp(34px, 10vw, 44px)' : 'clamp(42px, 5vw, 62px)',
                       fontWeight: 700,
                       color: 'white',
-                      margin: '0 0 18px',
+                      margin: isMobileViewport ? '0 0 12px' : '0 0 18px',
                       lineHeight: 1,
                     }}
                   >
                     {selectedSkill.title}
                   </h2>
-                  <p style={{ color: 'rgba(255,255,255,0.86)', fontSize: 13.2, lineHeight: 1.85, maxWidth: 620, margin: 0, fontWeight: 500 }}>
+                  <p style={{ color: 'rgba(255,255,255,0.86)', fontSize: isMobileViewport ? 12 : 13.2, lineHeight: isMobileViewport ? 1.62 : 1.85, maxWidth: isMobileViewport ? 310 : 620, margin: 0, fontWeight: 500 }}>
                     {selectedSkill.desc}
                   </p>
                 </div>
 
                 <div>
-                  <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.42)', marginBottom: 22 }} />
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 13 }}>
+                  <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.42)', marginBottom: isMobileViewport ? 14 : 22 }} />
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: isMobileViewport ? 6 : 13, overflowX: isMobileViewport ? 'auto' : undefined, paddingBottom: isMobileViewport ? 6 : 0 }} className={isMobileViewport ? 'scrollbar-hide' : undefined}>
                     {skillGroups.map((skill, i) => {
                       const active = activeSkill === i
                       return (
@@ -4612,8 +4703,8 @@ export default function App() {
                           aria-label={skill.title}
                           title={skill.title}
                           style={{
-                            width: 92,
-                            height: 112,
+                            width: isMobileViewport ? 62 : 92,
+                            height: isMobileViewport ? 78 : 112,
                             border: 'none',
                             padding: 0,
                             background: 'transparent',
@@ -4637,11 +4728,13 @@ export default function App() {
               <div
                 style={{
                   position: 'absolute',
-                  right: 58,
-                  top: 74,
+                  right: isMobileViewport ? 'calc(50% - 159px)' : 58,
+                  top: isMobileViewport ? '58%' : 74,
                   width: 318,
                   height: 332,
                   zIndex: 3,
+                  transform: isMobileViewport ? 'scale(0.82)' : undefined,
+                  transformOrigin: isMobileViewport ? 'top center' : undefined,
                 }}
               >
                 {selectedSkill.apps.map((app, i) => {
@@ -4772,8 +4865,8 @@ export default function App() {
 		              <div
 		                style={{
 		                  position: 'absolute',
-		                  right: 56,
-	                  bottom: 42,
+	                  right: isMobileViewport ? 'calc(50% - 130px)' : 56,
+	                  bottom: isMobileViewport ? 24 : 42,
 	                  width: 260,
 	                  height: 38,
 	                  borderRadius: '50%',
@@ -4800,8 +4893,8 @@ export default function App() {
 		                    position: 'absolute',
 		                    left: 12,
 		                    right: 12,
-		                    top: 48,
-		                    bottom: 48,
+		                    top: isMobileViewport ? 34 : 48,
+		                    bottom: isMobileViewport ? 38 : 48,
 		                    zIndex: 3,
 		                    overflow: 'hidden',
 		                    borderRadius: 22,
@@ -4821,7 +4914,8 @@ export default function App() {
 	              style={{
 	                position: 'absolute',
 	                left: '50%',
-	                top: 'calc(50% + max(215px, min(250px, calc((100vh - 160px) / 2))) + 28px)',
+	                top: isMobileViewport ? 'auto' : 'calc(50% + max(215px, min(250px, calc((100vh - 160px) / 2))) + 28px)',
+	                bottom: isMobileViewport ? 'calc(env(safe-area-inset-bottom) + 18px)' : undefined,
 	                transform: 'translateX(-50%)',
 	                zIndex: 8,
 	                display: 'flex',
@@ -4859,7 +4953,7 @@ export default function App() {
 	              <div
 	                style={{
 	                  color: 'rgba(255,255,255,0.76)',
-	                  fontSize: 13,
+	                  fontSize: isMobileViewport ? 11.5 : 13,
 	                  fontWeight: 800,
 	                  lineHeight: 1.4,
 	                  textShadow: '0 2px 10px rgba(82,31,4,0.26)',
@@ -4876,10 +4970,11 @@ export default function App() {
       <HomeGlbModel
         active={page === 'home'}
         style={{
-          top: 54,
-          left: '43%',
-          right: '-5%',
-          bottom: 0,
+          top: isMobileViewport ? '34vh' : 54,
+          left: isMobileViewport ? '-18%' : '43%',
+          right: isMobileViewport ? '-28%' : '-5%',
+          bottom: isMobileViewport ? '-8%' : 0,
+          zIndex: isMobileViewport ? 1 : undefined,
           opacity: page === 'home' ? 1 : 0,
           visibility: page === 'home' ? 'visible' : 'hidden',
           transition: 'opacity 160ms ease',
@@ -4899,7 +4994,7 @@ export default function App() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: 'min(6vw, 72px)',
+            padding: isMobileViewport ? 'calc(env(safe-area-inset-top) + 72px) 14px calc(env(safe-area-inset-bottom) + 24px)' : 'min(6vw, 72px)',
             background: 'rgba(14,8,4,0.82)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
