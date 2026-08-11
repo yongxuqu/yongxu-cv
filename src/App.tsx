@@ -33,30 +33,47 @@ const homeGlbPromise = new GLTFLoader().loadAsync('/me.glb')
 const projects = [
   {
     id: 1,
-    title: 'ColorLog',
+    title: 'Limu AI',
     year: '2024.11 - 至今',
-    label: '独立开发者 / APP PROJECT 01',
-    desc: '一款从需求分析、功能设计到前后端开发、测试上架完整推进的移动端产品。项目重点在于把用户记录、数据整理与轻量化体验做成可稳定发布的 App。',
-    highlights: ['独立完成产品需求、交互流程和核心功能开发', '推进 App Store 上架流程与版本迭代', '沉淀移动端产品从 0 到 1 的完整落地经验'],
-    poster: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=360&h=520&fit=crop&auto=format',
+    label: '独立开发者 / AI APP PROJECT 01',
+    desc: '「Limu AI」是一款用于建立专属人生博物馆的 AI 应用：通过自动抠图、智能识别、AI 叙事、一键成卡、3D 藏品与成就徽章，系统化整理生活中的物品与故事，把相册里的日常快照凝固成可收藏、可分享、可长期保存的私人数字馆藏。',
+    highlights: ['即拍即藏，AI 自动识别主角并生成精美展品卡', '用 AI 叙事补全物品简介、详细描述和私人记忆', '支持 3D 藏品、AR 展示、成就徽章与 iCloud 长期保存'],
+    poster: '/assets/projects/limu-ai-icon.png',
+    posterKind: 'appIcon',
+    showTitleLogo: true,
+    website: 'https://limuai.app',
+    showcaseImages: [
+      '/assets/projects/limu-showcase-1.jpg',
+      '/assets/projects/limu-showcase-2.jpg',
+      '/assets/projects/limu-showcase-3.jpg',
+      '/assets/projects/limu-showcase-4.jpg',
+      '/assets/projects/limu-showcase-5.jpg',
+      '/assets/projects/limu-showcase-6.jpg',
+      '/assets/projects/limu-showcase-7.jpg',
+      '/assets/projects/limu-showcase-8.jpg',
+    ],
   },
   {
     id: 2,
-    title: 'LimU AI',
+    title: 'ColorLog',
     year: '2024.11 - 至今',
-    label: '独立开发者 / AI APP PROJECT 02',
-    desc: '围绕 AI 工具使用场景设计和开发的移动端应用。项目更关注 AI 能力与具体用户任务之间的衔接，包括功能结构、前端体验和发布流程。',
-    highlights: ['完成 AI 产品功能拆解、界面组织与开发实现', '处理从开发测试到上架发布的完整链路', '与 ColorLog 共同形成累计 1700+ 用户的产品基础'],
-    poster: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=360&h=520&fit=crop&auto=format',
+    label: '独立开发者 / APP PROJECT 02',
+    desc: 'ColorLog 是一款简单好用、轻松上手的 Plog 创作工具。用户只需要选择照片，就能通过内置的多种精美模板，将照片、Live 和视频快速生成适合发布到小红书、朋友圈、微博等社交平台的高质感 Plog、Live Plog 和视频作品。无论是日常记录、旅行打卡、穿搭分享、美食照片，还是一张普通随手拍，ColorLog 都可以帮你一键生成更有设计感、更有氛围感的视觉作品；同时照片处理在本地完成，目前免费使用，无广告、无订阅。',
+    highlights: ['独立完成产品需求、交互流程和核心功能开发', '推进 App Store 上架流程与版本迭代', '沉淀移动端产品从 0 到 1 的完整落地经验'],
+    poster: '/assets/projects/colorlog-icon.png',
+    posterKind: 'appIcon',
+    showTitleLogo: true,
   },
   {
     id: 3,
     title: '久长时',
     year: '2025 - 至今',
     label: '个人产品 / PROJECT 03',
-    desc: '一个围绕时间、长期记录和个人记忆表达的产品项目。重点是把抽象的时间跨度、重要节点和长期陪伴感转化成更直观、更可感知的产品体验。',
+    desc: '久长时是一款面向 18-35 岁青年情侣的古风情侣 App，用古代书信、故事卷轴、黄历节气、铜币签到等东方意象，承载情侣之间的记录、陪伴与共同生活。产品支持手机号登录、情侣绑定、共同菜单与点菜、纪念日和节日提醒、故事记录、书信往来、记梦、备忘录、签到铜币、厕所记录以及经期和性爱记录等功能，把日常相处中的琐碎、仪式感和私密记忆整理成一套具有古风氛围的亲密关系工具。',
     highlights: ['梳理产品概念、核心用户场景和信息结构', '探索时间记录、节点表达和情绪化交互方式', '作为个人产品方向持续打磨视觉与功能体验'],
-    poster: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=360&h=520&fit=crop&auto=format',
+    poster: '/assets/projects/jiuchangshi-icon.png',
+    posterKind: 'appIcon',
+    showTitleLogo: true,
   },
   {
     id: 4,
@@ -65,25 +82,29 @@ const projects = [
     label: '独立开发者 / TOOL PROJECT 04',
     desc: '面向家装报价场景开发的效率工具，通过扫描识别、数据整理、价格计算和报价单生成，减少重复录入与人工核算成本。',
     highlights: ['围绕真实业务流程拆解报价、材料和客户信息结构', '实现扫描识别后的数据整理与计算流程', '将复杂重复工作封装成可复用的报价生成工具'],
-    poster: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=360&h=520&fit=crop&auto=format',
+    poster: '/assets/projects/home-quote-icon.png',
+    posterKind: 'appIcon',
   },
   {
     id: 5,
     title: '中国国际大学生创新大赛',
+    stripTitle: '创新大赛',
     year: '2024.07 - 2025.07',
     label: '项目负责人、核心成员 / COMPETITION PROJECT 05',
     desc: '赛事攻坚：参与《石墨烯生产工艺创新与应用产品开发》项目，围绕技术路线、产品应用、市场价值及商业化方案开展调研、方案梳理和内容优化，并完成核心竞赛及答辩材料（PPT、视频），推动团队连续两年获奖，其中 2024 年获山东省金奖，2025 年获山东省银奖。',
     highlights: ['负责技术路线、产品应用和商业化方案梳理', '参与竞赛 PPT、视频和答辩材料优化', '推动团队获得 2024 山东省金奖、2025 山东省银奖'],
-    poster: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=360&h=520&fit=crop&auto=format',
+    poster: '/assets/projects/innovation-competition-icon.png',
+    posterKind: 'appIcon',
   },
   {
     id: 6,
-    title: '大学生创新创业训练计划项目',
+    title: '大创项目',
     year: '2024.10 - 2026.4',
     label: '项目负责人 / RESEARCH PROJECT 06',
     desc: '科研探索：参与《燃烧的二氧化碳甲基化硫脲氢化反应》课题研究，负责文献调研、实验测试与数据整理；在项目推进中基于课题组原有研究方向进行延伸与创新，熟悉有机合成实验流程，提升了科研思维、实验操作和问题分析能力。',
     highlights: ['负责文献调研、实验测试和阶段性数据整理', '围绕课题组方向做反应流程理解与方案延伸', '提升科研思维、实验操作和问题分析能力'],
-    poster: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=360&h=520&fit=crop&auto=format',
+    poster: '/assets/projects/dachuang-icon.png',
+    posterKind: 'appIcon',
   },
 ]
 
@@ -596,6 +617,16 @@ const appSpreadSlotsFour = [
 ]
 
 const appIconSize = 56
+const showcaseStackSlots = [
+  { left: 13, top: 50, depth: -70 },
+  { left: 24, top: 50, depth: -50 },
+  { left: 35, top: 50, depth: -30 },
+  { left: 46, top: 50, depth: -10 },
+  { left: 57, top: 50, depth: 10 },
+  { left: 68, top: 50, depth: 30 },
+  { left: 79, top: 50, depth: 50 },
+  { left: 90, top: 50, depth: 70 },
+]
 const skillIconCollapseMs = 300
 const skillIconExpandDelayMs = 35
 const skillPageAutoExpandDelayMs = 180
@@ -2577,6 +2608,7 @@ export default function App() {
   const [page, setPage] = useState<Page>('home')
   const [pageMotion, setPageMotion] = useState<PageMotion>('none')
   const [activeProject, setActiveProject] = useState(0)
+  const [hoveredShowcaseIndex, setHoveredShowcaseIndex] = useState<number | null>(null)
   const [activeSkill, setActiveSkill] = useState(0)
   const [activeSkillWall, setActiveSkillWall] = useState(0)
   const [skillWallTrackIndex, setSkillWallTrackIndex] = useState(0)
@@ -3107,125 +3139,271 @@ export default function App() {
         <div className={pageClassName} style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
           {/* Background */}
           <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-            <img
-              src={projects[activeProject].poster}
-              alt="background"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(60px) brightness(0.3)', transform: 'scale(1.1)' }}
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: `radial-gradient(ellipse at 18% 16%, rgba(255,225,150,0.64) 0%, rgba(255,225,150,0) 38%),
+                  radial-gradient(ellipse at 78% 88%, rgba(255,126,30,0.42) 0%, rgba(255,126,30,0) 44%),
+                  linear-gradient(135deg, #f26a1b 0%, #ff8a24 48%, #ffb13b 100%)`,
+              }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.7)' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,190,80,0.08)' }} />
           </div>
 
           {/* Content */}
           <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '100px 0 0' }}>
             {/* Project detail */}
-            <div style={{ padding: '0 60px', maxWidth: 500 }}>
-              <div style={{ fontSize: 11, letterSpacing: 4, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 8 }}>
+            <div style={{ padding: '0 60px', maxWidth: 570, transform: 'translateY(28px)', position: 'relative', zIndex: 2 }}>
+              <div style={{ fontSize: 11.5, letterSpacing: 4, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 8 }}>
                 {projects[activeProject].label}
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 16 }}>
+              <div style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.4)', marginBottom: 18 }}>
                 {projects[activeProject].year}
               </div>
               <h2
                 style={{
                   fontFamily: "'Oswald', sans-serif",
-                  fontSize: 'clamp(32px, 5vw, 60px)',
+                  fontSize: projects[activeProject].stripTitle ? 'clamp(34px, 4.35vw, 54px)' : 'clamp(32px, 5vw, 60px)',
                   fontWeight: 700,
                   color: 'white',
                   margin: '0 0 24px',
                   lineHeight: 1.1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 16,
+                  flexWrap: 'wrap',
+                  whiteSpace: projects[activeProject].stripTitle ? 'nowrap' : undefined,
                 }}
               >
-                {projects[activeProject].title}
-              </h2>
-              <p style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14, lineHeight: 1.75, margin: '0 0 18px' }}>
-                {projects[activeProject].desc}
-              </p>
-              <div style={{ display: 'grid', gap: 8, marginBottom: 24 }}>
-                {projects[activeProject].highlights.map((item) => (
-                  <div
-                    key={item}
+                <span>{projects[activeProject].title}</span>
+                {projects[activeProject].showTitleLogo && (
+                  <span
+                    aria-hidden="true"
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: '8px minmax(0, 1fr)',
-                      alignItems: 'start',
-                      gap: 10,
-                      color: 'rgba(255,255,255,0.72)',
-                      fontSize: 12.5,
-                      lineHeight: 1.55,
+                      width: 48,
+                      height: 48,
+                      borderRadius: 13,
+                      overflow: 'hidden',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flex: '0 0 auto',
+                      transform: 'translateY(5px)',
                     }}
                   >
-                    <span
+                    <img
+                      src={projects[activeProject].poster}
+                      alt=""
+                      draggable={false}
                       style={{
-                        width: 5,
-                        height: 5,
-                        borderRadius: '50%',
-                        background: hoodieOrange,
-                        marginTop: 7,
-                        boxShadow: `0 0 12px ${hoodieOrangeGlow}`,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
                       }}
                     />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
+                  </span>
+                )}
+              </h2>
+              <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: 15.5, lineHeight: 1.85, margin: '0 0 22px' }}>
+                {projects[activeProject].desc}
+              </p>
               <div style={{ width: 40, height: 3, background: hoodieOrange }} />
+              {projects[activeProject].website && (
+                <a
+                  href={projects[activeProject].website}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    marginTop: 18,
+                    color: 'rgba(255,255,255,0.88)',
+                    fontSize: 14,
+                    fontWeight: 800,
+                    textDecoration: 'none',
+                    textShadow: '0 2px 8px rgba(92,37,6,0.18)',
+                  }}
+                >
+                  网站：limuai.app
+                </a>
+              )}
             </div>
+
+            {projects[activeProject].showcaseImages && (
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  right: 'clamp(48px, 7vw, 108px)',
+                  top: 122,
+                  width: 'min(50vw, 720px)',
+                  height: 'min(62vh, 560px)',
+                  zIndex: 1,
+                  perspective: 1200,
+                  transformStyle: 'preserve-3d',
+                  pointerEvents: 'auto',
+                }}
+                onMouseMove={(event) => {
+                  const images = projects[activeProject].showcaseImages
+                  const rect = event.currentTarget.getBoundingClientRect()
+                  const ratio = (event.clientX - rect.left) / rect.width
+                  const nextIndex = Math.max(0, Math.min(images.length - 1, Math.floor(ratio * images.length)))
+                  if (nextIndex !== hoveredShowcaseIndex) setHoveredShowcaseIndex(nextIndex)
+                }}
+                onMouseLeave={() => setHoveredShowcaseIndex(null)}
+              >
+                {projects[activeProject].showcaseImages.map((image, imageIndex) => {
+                  const slot = showcaseStackSlots[imageIndex] ?? showcaseStackSlots[showcaseStackSlots.length - 1]
+                  const focused = hoveredShowcaseIndex === imageIndex
+                  const muted = hoveredShowcaseIndex !== null && !focused
+
+                  return (
+                    <img
+                      key={image}
+                      src={image}
+                      alt=""
+                      draggable={false}
+                      onMouseEnter={() => setHoveredShowcaseIndex(imageIndex)}
+                      style={{
+                        position: 'absolute',
+                        left: `${slot.left}%`,
+                        top: `${slot.top}%`,
+                        width: focused ? '30%' : '24%',
+                        height: focused ? '86%' : '76%',
+                        objectFit: 'cover',
+                        objectPosition: 'center',
+                        borderRadius: focused ? 30 : 24,
+                        display: 'block',
+                        cursor: 'default',
+                        pointerEvents: 'none',
+                        opacity: muted ? 0.42 : 1,
+                        zIndex: focused ? 80 : imageIndex + 1,
+                        boxShadow: focused
+                          ? '0 34px 70px rgba(77,29,4,0.3)'
+                          : '0 18px 38px rgba(77,29,4,0.16)',
+                        transform: focused
+                          ? 'translate3d(-50%, -50%, 150px) rotateY(0deg) rotateZ(0deg) scale(1.08)'
+                          : `translate3d(-50%, -50%, ${slot.depth}px) rotateY(0deg) rotateZ(0deg) scale(${muted ? 0.96 : 1})`,
+                        transformStyle: 'preserve-3d',
+                        transition:
+                          'transform 320ms cubic-bezier(0.2, 0.9, 0.22, 1), width 320ms ease, height 320ms ease, opacity 220ms ease, box-shadow 320ms ease, border-radius 320ms ease',
+                      }}
+                    />
+                  )
+                })}
+              </div>
+            )}
 
             {/* Project poster strip */}
             <div
               style={{
+                position: 'relative',
+                zIndex: 2,
                 overflowX: 'auto',
                 display: 'flex',
                 gap: 12,
-                padding: '24px 60px 48px',
+                padding: '24px 60px 18px',
                 scrollbarWidth: 'none',
               }}
               className="scrollbar-hide"
             >
-              {projects.map((project, i) => (
-                <div
-                  key={project.id}
-                  onClick={() => setActiveProject(i)}
-                  style={{
-                    flex: '0 0 140px',
-                    height: 200,
-                    borderRadius: 12,
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    border: activeProject === i ? `2px solid ${hoodieOrange}` : '2px solid transparent',
-                    transition: 'all 0.25s',
-                    transform: activeProject === i ? 'scale(1.05)' : 'scale(1)',
-                    boxShadow: activeProject === i ? `0 8px 32px ${hoodieOrangeGlow}` : '0 4px 16px rgba(0,0,0,0.4)',
-                  }}
-                >
-                  <img
-                    src={project.poster}
-                    alt={project.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
+              {projects.map((project, i) => {
+                const active = activeProject === i
+                const isAppIconProject = project.posterKind === 'appIcon'
+
+                return (
                   <div
+                    key={project.id}
+                    onClick={() => setActiveProject(i)}
                     style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background: activeProject === i ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.45)',
+                      flex: '0 0 140px',
+                      height: 200,
+                      borderRadius: 12,
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      position: 'relative',
+                      background: isAppIconProject ? 'transparent' : undefined,
+                      border: isAppIconProject ? '2px solid transparent' : active ? `2px solid ${hoodieOrange}` : '2px solid transparent',
                       transition: 'all 0.25s',
-                      display: 'flex',
-                      alignItems: 'flex-end',
-                      padding: 10,
+                      transform: isAppIconProject ? (active ? 'scale(1.08)' : 'scale(0.94)') : active ? 'scale(1.05)' : 'scale(1)',
+                      opacity: isAppIconProject ? (active ? 1 : 0.62) : 1,
+                      boxShadow: isAppIconProject ? 'none' : active ? `0 8px 32px ${hoodieOrangeGlow}` : '0 4px 16px rgba(0,0,0,0.4)',
                     }}
                   >
-                    <div style={{ color: 'white', lineHeight: 1.25 }}>
-                      <div style={{ fontSize: 12, fontWeight: 800, marginBottom: 4 }}>
-                        {project.title}
+                    {isAppIconProject ? (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: '50%',
+                          top: 66,
+                          width: 82,
+                          height: 82,
+                          borderRadius: 22,
+                          overflow: 'hidden',
+                          transform: `translate(-50%, ${active ? '-60%' : '-50%'})`,
+                          transition: 'transform 260ms cubic-bezier(0.2, 0.9, 0.22, 1), filter 260ms ease',
+                          filter: active ? 'saturate(1.12) contrast(1.05)' : 'saturate(0.9) contrast(0.96)',
+                        }}
+                      >
+                        <img
+                          src={project.poster}
+                          alt={project.title}
+                          style={{
+                            position: 'absolute',
+                            left: `calc(50% + ${project.iconCropOffsetX ?? 0}px)`,
+                            top: `calc(50% + ${project.iconCropOffsetY ?? 0}px)`,
+                            width: `${(project.iconCropScale ?? 1) * 100}%`,
+                            height: `${(project.iconCropScale ?? 1) * 100}%`,
+                            objectFit: 'cover',
+                            transform: 'translate(-50%, -50%)',
+                            display: 'block',
+                          }}
+                        />
                       </div>
-                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', fontWeight: 600 }}>
-                        {project.year}
+                    ) : (
+                      <img
+                        src={project.poster}
+                        alt={project.title}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    )}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: isAppIconProject ? 'transparent' : active ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.45)',
+                        transition: 'all 0.25s',
+                        display: isAppIconProject ? 'block' : 'flex',
+                        alignItems: isAppIconProject ? undefined : 'flex-end',
+                        justifyContent: isAppIconProject ? 'center' : 'flex-start',
+                        padding: isAppIconProject ? 0 : 10,
+                      }}
+                    >
+                      <div
+                        style={{
+                          color: 'white',
+                          lineHeight: 1.25,
+                          textAlign: isAppIconProject ? 'center' : 'left',
+                          position: isAppIconProject ? 'absolute' : undefined,
+                          left: isAppIconProject ? 0 : undefined,
+                          right: isAppIconProject ? 0 : undefined,
+                          top: isAppIconProject ? 124 : undefined,
+                        }}
+                      >
+                        <div style={{ fontSize: active ? 15 : 13, fontWeight: 800, textShadow: active ? '0 3px 10px rgba(50,18,4,0.34)' : '0 2px 6px rgba(50,18,4,0.2)' }}>
+                          {project.stripTitle ?? project.title}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>
