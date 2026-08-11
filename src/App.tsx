@@ -618,14 +618,14 @@ const appSpreadSlotsFour = [
 
 const appIconSize = 56
 const showcaseStackSlots = [
-  { left: 13, top: 50, depth: -70 },
-  { left: 24, top: 50, depth: -50 },
-  { left: 35, top: 50, depth: -30 },
-  { left: 46, top: 50, depth: -10 },
-  { left: 57, top: 50, depth: 10 },
-  { left: 68, top: 50, depth: 30 },
-  { left: 79, top: 50, depth: 50 },
-  { left: 90, top: 50, depth: 70 },
+  { left: 15, top: 50, depth: -56 },
+  { left: 25, top: 50, depth: -40 },
+  { left: 35, top: 50, depth: -24 },
+  { left: 45, top: 50, depth: -8 },
+  { left: 55, top: 50, depth: 8 },
+  { left: 65, top: 50, depth: 24 },
+  { left: 75, top: 50, depth: 40 },
+  { left: 85, top: 50, depth: 56 },
 ]
 const skillIconCollapseMs = 300
 const skillIconExpandDelayMs = 35
@@ -2609,6 +2609,8 @@ export default function App() {
   const [pageMotion, setPageMotion] = useState<PageMotion>('none')
   const [activeProject, setActiveProject] = useState(0)
   const [hoveredShowcaseIndex, setHoveredShowcaseIndex] = useState<number | null>(null)
+  const [projectStoryProgress, setProjectStoryProgress] = useState(0)
+  const [projectStripOverflowOpen, setProjectStripOverflowOpen] = useState(false)
   const [activeSkill, setActiveSkill] = useState(0)
   const [activeSkillWall, setActiveSkillWall] = useState(0)
   const [skillWallTrackIndex, setSkillWallTrackIndex] = useState(0)
@@ -2623,6 +2625,7 @@ export default function App() {
   const wheelLockRef = useRef(false)
   const wheelResetTimerRef = useRef<number | null>(null)
   const wheelLockTimerRef = useRef<number | null>(null)
+  const projectStripOverflowTimerRef = useRef<number | null>(null)
   const skillExpandTimerRef = useRef<number | null>(null)
   const skillWallWrapTimerRef = useRef<number | null>(null)
   const skillWallNavTimerRef = useRef<number | null>(null)
@@ -2641,6 +2644,39 @@ export default function App() {
   useEffect(() => {
     pageRef.current = page
   }, [page])
+
+  useEffect(() => {
+    setProjectStoryProgress(0)
+    setProjectStripOverflowOpen(false)
+    if (projectStripOverflowTimerRef.current !== null) {
+      window.clearTimeout(projectStripOverflowTimerRef.current)
+      projectStripOverflowTimerRef.current = null
+    }
+    setHoveredShowcaseIndex(null)
+  }, [page, activeProject])
+
+  useEffect(() => {
+    if (page !== 'videos') return
+
+    if (projectStoryProgress > 0.001) {
+      if (projectStripOverflowTimerRef.current !== null) {
+        window.clearTimeout(projectStripOverflowTimerRef.current)
+        projectStripOverflowTimerRef.current = null
+      }
+      setProjectStripOverflowOpen(true)
+      return
+    }
+
+    if (!projectStripOverflowOpen) return
+
+    if (projectStripOverflowTimerRef.current !== null) {
+      window.clearTimeout(projectStripOverflowTimerRef.current)
+    }
+    projectStripOverflowTimerRef.current = window.setTimeout(() => {
+      setProjectStripOverflowOpen(false)
+      projectStripOverflowTimerRef.current = null
+    }, 360)
+  }, [page, projectStoryProgress, projectStripOverflowOpen])
 
   useEffect(() => {
     activeSkillWallRef.current = activeSkillWall
@@ -2736,6 +2772,10 @@ export default function App() {
         skillExpandTimerRef.current = null
       }, skillIconExpandDelayMs)
     }, waitForCollapse ? skillIconCollapseMs : skillIconExpandDelayMs)
+  }
+
+  const moveProjectStory = (delta: number) => {
+    setProjectStoryProgress((current) => Math.max(0, Math.min(2, current + delta)))
   }
 
   const resetSkillWallTrackAfterWrap = (index: number) => {
@@ -2892,6 +2932,9 @@ export default function App() {
       if (wheelLockTimerRef.current !== null) {
         window.clearTimeout(wheelLockTimerRef.current)
       }
+      if (projectStripOverflowTimerRef.current !== null) {
+        window.clearTimeout(projectStripOverflowTimerRef.current)
+      }
     }
   }, [])
 
@@ -2899,6 +2942,12 @@ export default function App() {
   const selectedSkill = skillGroups[activeSkill]
   const activeSkillWallData = skillWalls[activeSkillWall]
   const activeSkillColor = activeSkillWall === 0 ? selectedSkill.color : activeSkillWallData.color
+  const isProjectStoryActive = page === 'videos'
+  const projectIntroProgress = isProjectStoryActive ? Math.min(1, projectStoryProgress) : 0
+  const projectWorkProgress = isProjectStoryActive ? Math.max(0, projectStoryProgress - 1) : 0
+  const projectDetailOpacity = isProjectStoryActive ? Math.max(0, 1 - projectIntroProgress * 1.28) : 1
+  const projectWorkPanelProgress = isProjectStoryActive ? Math.max(0, Math.min(1, (projectStoryProgress - 0.62) / 1.38)) : 0
+  const selectedProjectExitProgress = isProjectStoryActive ? Math.max(0, Math.min(1, (projectWorkProgress - 0.82) / 1.18)) : 0
   const selectedAppSlots =
     selectedSkill.apps.length === 2
       ? [
@@ -3136,7 +3185,17 @@ export default function App() {
 
       {/* PROJECTS PAGE */}
       {page === 'videos' && (
-        <div className={pageClassName} style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+        <div
+          className={pageClassName}
+          onWheelCapture={(event) => {
+            if (event.ctrlKey) return
+            const wheelDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
+            if (Math.abs(wheelDelta) < 3) return
+            event.preventDefault()
+            moveProjectStory(wheelDelta * 0.0035)
+          }}
+          style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}
+        >
           {/* Background */}
           <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
             <div
@@ -3154,7 +3213,18 @@ export default function App() {
           {/* Content */}
           <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '100px 0 0' }}>
             {/* Project detail */}
-            <div style={{ padding: '0 60px', maxWidth: 570, transform: 'translateY(28px)', position: 'relative', zIndex: 2 }}>
+            <div
+              style={{
+                padding: '0 60px',
+                maxWidth: 570,
+                transform: `translate3d(${-projectIntroProgress * 40}px, ${28 - projectIntroProgress * 18}px, 0)`,
+                opacity: projectDetailOpacity,
+                pointerEvents: projectDetailOpacity > 0.12 ? 'auto' : 'none',
+                position: 'relative',
+                zIndex: 2,
+                transition: 'opacity 180ms ease-out, transform 180ms ease-out',
+              }}
+            >
               <div style={{ fontSize: 11.5, letterSpacing: 4, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 8 }}>
                 {projects[activeProject].label}
               </div>
@@ -3236,14 +3306,17 @@ export default function App() {
                 aria-hidden="true"
                 style={{
                   position: 'absolute',
-                  right: 'clamp(48px, 7vw, 108px)',
-                  top: 122,
-                  width: 'min(50vw, 720px)',
-                  height: 'min(62vh, 560px)',
+                  right: 'clamp(58px, 7vw, 108px)',
+                  top: 136,
+                  width: 'min(44vw, 640px)',
+                  height: 'min(54vh, 500px)',
                   zIndex: 1,
-                  perspective: 1200,
+                  perspective: 1040,
                   transformStyle: 'preserve-3d',
-                  pointerEvents: 'auto',
+                  opacity: Math.max(0, 1 - projectIntroProgress * 1.18),
+                  transform: `translate3d(${projectIntroProgress * 70}px, ${projectIntroProgress * 12}px, 0)`,
+                  transition: 'opacity 180ms ease-out, transform 180ms ease-out',
+                  pointerEvents: projectIntroProgress < 0.82 ? 'auto' : 'none',
                 }}
                 onMouseMove={(event) => {
                   const images = projects[activeProject].showcaseImages
@@ -3270,22 +3343,22 @@ export default function App() {
                         position: 'absolute',
                         left: `${slot.left}%`,
                         top: `${slot.top}%`,
-                        width: focused ? '30%' : '24%',
-                        height: focused ? '86%' : '76%',
+                        width: focused ? '25.5%' : '20.5%',
+                        height: focused ? '78%' : '68%',
                         objectFit: 'cover',
                         objectPosition: 'center',
-                        borderRadius: focused ? 30 : 24,
+                        borderRadius: focused ? 24 : 20,
                         display: 'block',
                         cursor: 'default',
                         pointerEvents: 'none',
-                        opacity: muted ? 0.42 : 1,
+                        opacity: muted ? 0.56 : 1,
                         zIndex: focused ? 80 : imageIndex + 1,
                         boxShadow: focused
-                          ? '0 34px 70px rgba(77,29,4,0.3)'
-                          : '0 18px 38px rgba(77,29,4,0.16)',
+                          ? '0 24px 52px rgba(77,29,4,0.24)'
+                          : '0 13px 28px rgba(77,29,4,0.14)',
                         transform: focused
-                          ? 'translate3d(-50%, -50%, 150px) rotateY(0deg) rotateZ(0deg) scale(1.08)'
-                          : `translate3d(-50%, -50%, ${slot.depth}px) rotateY(0deg) rotateZ(0deg) scale(${muted ? 0.96 : 1})`,
+                          ? 'translate3d(-50%, -50%, 112px) rotateY(0deg) rotateZ(0deg) scale(1.03)'
+                          : `translate3d(-50%, -50%, ${slot.depth}px) rotateY(0deg) rotateZ(0deg) scale(${muted ? 0.985 : 1})`,
                         transformStyle: 'preserve-3d',
                         transition:
                           'transform 320ms cubic-bezier(0.2, 0.9, 0.22, 1), width 320ms ease, height 320ms ease, opacity 220ms ease, box-shadow 320ms ease, border-radius 320ms ease',
@@ -3296,12 +3369,104 @@ export default function App() {
               </div>
             )}
 
+            {isProjectStoryActive && (
+              <div
+                aria-label={`${projects[activeProject].title} 我参与做的事情`}
+                style={{
+                  position: 'absolute',
+                  right: 'clamp(58px, 8vw, 118px)',
+                  top: '50%',
+                  width: 'min(42vw, 560px)',
+                  transform: `translate3d(${(1 - projectWorkPanelProgress) * 360}px, -50%, 0)`,
+                  opacity: projectWorkPanelProgress,
+                  zIndex: 3,
+                  pointerEvents: projectWorkPanelProgress > 0.72 ? 'auto' : 'none',
+                  transition: 'opacity 180ms ease-out, transform 180ms ease-out',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 12,
+                    letterSpacing: 4,
+                    color: 'rgba(255,255,255,0.58)',
+                    fontWeight: 800,
+                    marginBottom: 14,
+                  }}
+                >
+                  {projects[activeProject].title} / WHAT I DID
+                </div>
+                <h3
+                  style={{
+                    fontFamily: "'Oswald', sans-serif",
+                    color: 'white',
+                    fontSize: 'clamp(38px, 5.2vw, 68px)',
+                    lineHeight: 1.02,
+                    margin: '0 0 24px',
+                    fontWeight: 700,
+                    textShadow: '0 10px 24px rgba(92,37,6,0.16)',
+                  }}
+                >
+                  我参与做的事情
+                </h3>
+                <div
+                  style={{
+                    display: 'grid',
+                    gap: 14,
+                  }}
+                >
+                  {['产品方向与信息架构', 'AI 识别与展品卡体验', '视觉展示与发布落地'].map((item, itemIndex) => (
+                    <div
+                      key={item}
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '42px minmax(0, 1fr)',
+                        alignItems: 'center',
+                        gap: 14,
+                        transform: `translateX(${(1 - projectWorkPanelProgress) * (70 + itemIndex * 18)}px)`,
+                        opacity: Math.max(0, Math.min(1, (projectWorkPanelProgress - itemIndex * 0.08) / 0.78)),
+                        transition: 'opacity 180ms ease-out, transform 180ms ease-out',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 42,
+                          height: 42,
+                          borderRadius: 14,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          fontSize: 13,
+                          fontWeight: 900,
+                          background: 'rgba(255,255,255,0.18)',
+                          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.16)',
+                        }}
+                      >
+                        {String(itemIndex + 1).padStart(2, '0')}
+                      </div>
+                      <div
+                        style={{
+                          color: 'rgba(255,255,255,0.88)',
+                          fontSize: 17,
+                          fontWeight: 850,
+                          lineHeight: 1.35,
+                        }}
+                      >
+                        {item}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Project poster strip */}
             <div
               style={{
                 position: 'relative',
-                zIndex: 2,
-                overflowX: 'auto',
+                zIndex: 5,
+                overflow: projectStoryProgress > 0 || projectStripOverflowOpen ? 'visible' : undefined,
+                overflowX: projectStoryProgress > 0 || projectStripOverflowOpen ? 'visible' : 'auto',
                 display: 'flex',
                 gap: 12,
                 padding: '24px 60px 18px',
@@ -3312,6 +3477,23 @@ export default function App() {
               {projects.map((project, i) => {
                 const active = activeProject === i
                 const isAppIconProject = project.posterKind === 'appIcon'
+                const isSelectedStoryCard = isProjectStoryActive && active
+                const cardFallProgress =
+                  isProjectStoryActive && !active
+                    ? Math.max(0, Math.min(1, (projectIntroProgress - Math.abs(i - activeProject) * 0.09) / 0.46))
+                    : 0
+                const selectedTargetX = 236 - i * 152
+                const selectedCardX = isSelectedStoryCard ? projectIntroProgress * selectedTargetX - selectedProjectExitProgress * 116 : 0
+                const selectedCardY = isSelectedStoryCard ? projectIntroProgress * -322 - selectedProjectExitProgress * 18 : cardFallProgress * (780 + i * 58)
+                const storyScale = isSelectedStoryCard ? 1.08 + projectIntroProgress * 0.34 : null
+                const cardScale = storyScale ?? (isAppIconProject ? (active ? 1.08 : 0.94) : active ? 1.05 : 1)
+                const cardOpacity = isProjectStoryActive && !active
+                    ? Math.max(0, 1 - cardFallProgress * 1.12)
+                    : isAppIconProject
+                      ? active
+                        ? 1
+                        : 0.62
+                      : 1
 
                 return (
                   <div
@@ -3321,14 +3503,16 @@ export default function App() {
                       flex: '0 0 140px',
                       height: 200,
                       borderRadius: 12,
-                      overflow: 'hidden',
+                      overflow: isAppIconProject ? 'visible' : 'hidden',
                       cursor: 'pointer',
                       position: 'relative',
+                      zIndex: isSelectedStoryCard ? 22 : active ? 8 : 1,
                       background: isAppIconProject ? 'transparent' : undefined,
                       border: isAppIconProject ? '2px solid transparent' : active ? `2px solid ${hoodieOrange}` : '2px solid transparent',
                       transition: 'all 0.25s',
-                      transform: isAppIconProject ? (active ? 'scale(1.08)' : 'scale(0.94)') : active ? 'scale(1.05)' : 'scale(1)',
-                      opacity: isAppIconProject ? (active ? 1 : 0.62) : 1,
+                      transform: `translate3d(${selectedCardX}px, ${selectedCardY}px, 0) scale(${cardScale}) rotate(${cardFallProgress * (i % 2 === 0 ? 8 : -8)}deg)`,
+                      opacity: cardOpacity,
+                      pointerEvents: cardOpacity > 0.2 ? 'auto' : 'none',
                       boxShadow: isAppIconProject ? 'none' : active ? `0 8px 32px ${hoodieOrangeGlow}` : '0 4px 16px rgba(0,0,0,0.4)',
                     }}
                   >
