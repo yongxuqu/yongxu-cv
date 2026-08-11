@@ -7,6 +7,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import WarpText from './components/WarpText'
+import { readingReflections } from './readingReflections'
 
 type Page = 'home' | 'videos' | 'skills'
 type PageMotion = 'none' | 'up' | 'down'
@@ -172,8 +173,8 @@ const skillGroups = [
 ]
 
 const skillWalls = [
-  { title: '软件技能', displayTitle: '个人技能', label: 'SOFTWARE', color: hoodieOrange },
-  { title: '读书感悟', displayTitle: '读书感悟', label: 'READING', color: '#d87922' },
+  { title: '软件技能', displayTitle: '我掌握的技能', label: 'SOFTWARE', color: hoodieOrange },
+  { title: '读书感悟', displayTitle: '我的读书感悟', label: 'READING', color: '#d87922' },
 ]
 
 type ReadingShelfBook = {
@@ -566,6 +567,19 @@ const readingShelfBooks: ReadingShelfBook[] = [
     dimensionsMm: { coverWidth: 148, coverHeight: 210, spineDepth: 18 },
   },
 ]
+
+const verticallyCenteredReadingTitles = new Set([
+  '瓦尔登湖',
+  '解忧杂货店',
+  '山茶文具店',
+  '许三观卖血记',
+  '东京奇谭集',
+  '飞鸟集',
+  '太白金星有点烦',
+  '我与地坛',
+  '老人与海',
+  '故事新编',
+])
 
 const appSpreadSlots = [
   { left: 18, top: 22, rotation: -13 },
@@ -1354,6 +1368,8 @@ function ImmersiveBookDetail({
 function ReadingBookDetailOverlay({ book, onClose }: { book: (typeof readingShelfBooks)[number]; onClose: () => void }) {
   const [copyVisible, setCopyVisible] = useState(false)
   const [backdropVisible, setBackdropVisible] = useState(false)
+  const reflection = readingReflections[book.title] ?? [book.note]
+  const shouldCenterCopy = verticallyCenteredReadingTitles.has(book.title)
 
   useEffect(() => {
     setCopyVisible(false)
@@ -1393,6 +1409,12 @@ function ReadingBookDetailOverlay({ book, onClose }: { book: (typeof readingShel
       <div
         data-allow-scroll="true"
         onWheel={(event) => {
+          const target = event.target instanceof Element ? event.target : null
+          if (target?.closest('[data-reading-detail-scroll="true"]')) {
+            event.stopPropagation()
+            return
+          }
+
           event.preventDefault()
           event.stopPropagation()
         }}
@@ -1407,42 +1429,23 @@ function ReadingBookDetailOverlay({ book, onClose }: { book: (typeof readingShel
         <BookDetailCloseButton onClose={onClose} zIndex={5} />
 
         <section
+          className={`reading-detail-copy${shouldCenterCopy ? ' reading-detail-copy--center' : ''}`}
           style={{
-            position: 'absolute',
-            right: '8.5%',
-            top: '30%',
-            width: '34%',
-            maxWidth: 520,
-            zIndex: 1,
-            color: 'white',
-            textShadow: '0 10px 28px rgba(22,10,8,0.18)',
             opacity: copyVisible ? 1 : 0,
             transform: copyVisible ? 'translateY(0)' : 'translateY(12px)',
             transition: 'opacity 420ms ease, transform 420ms ease',
             pointerEvents: copyVisible ? 'auto' : 'none',
           }}
         >
-          <div style={{ fontSize: 10, letterSpacing: 4, textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginBottom: 20 }}>
-            READING NOTE
+          <div className="reading-detail-kicker">READING NOTE</div>
+          <h3 className="reading-detail-title">{book.title}</h3>
+          <div data-reading-detail-scroll="true" data-allow-scroll="true" className="reading-detail-scroll">
+            {reflection.map((paragraph, index) => (
+              <p className="reading-detail-paragraph" key={`${book.title}-${index}`}>
+                {paragraph}
+              </p>
+            ))}
           </div>
-          <h3
-            style={{
-              margin: 0,
-              fontFamily: "'Oswald', sans-serif",
-              fontSize: 'clamp(40px, 5vw, 74px)',
-              lineHeight: 0.95,
-              fontWeight: 700,
-              letterSpacing: 0,
-            }}
-          >
-            {book.title}
-          </h3>
-          <p style={{ margin: '24px 0 0', fontSize: 15, lineHeight: 1.86, fontWeight: 800, color: 'rgba(255,255,255,0.9)' }}>
-            {book.note}
-          </p>
-          <p style={{ margin: '24px 0 0', fontSize: 13, lineHeight: 1.82, fontWeight: 650, color: 'rgba(255,255,255,0.68)' }}>
-            把读到的概念放回真实场景里，留下可被再次验证的判断。
-          </p>
         </section>
       </div>
     </>,
@@ -3296,7 +3299,6 @@ export default function App() {
 	                >
 	                  {String(activeSkillWall + 1).padStart(2, '0')}
 	                </span>
-	                <span style={{ width: 30, height: 1, background: 'rgba(255,255,255,0.58)' }} />
 	                <span
 	                  style={{
 	                    fontSize: 15,
